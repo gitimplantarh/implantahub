@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Escritório Implanta — Reservas</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --bg-secondary: #f5f5f3;
+      --bg-tertiary: #eeede9;
+      --text: #1a1a18;
+      --text-secondary: #6b6b67;
+      --text-tertiary: #9b9b97;
+      --border: rgba(0,0,0,0.12);
+      --border-md: rgba(0,0,0,0.22);
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --green-bg: #EAF3DE; --green-text: #27500A; --green-border: #97C459;
+      --red-bg: #FCEBEB; --red-text: #791F1F; --red-border: #F09595;
+      --blue-bg: #E6F1FB; --blue-text: #0C447C; --blue-border: #85B7EB;
+      --amber-bg: #FAEEDA; --amber-text: #633806; --amber-border: #EF9F27;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1c1a; --bg-secondary: #262624; --bg-tertiary: #2e2e2c;
+        --text: #f0efeb; --text-secondary: #a0a09c; --text-tertiary: #6b6b67;
+        --border: rgba(255,255,255,0.1); --border-md: rgba(255,255,255,0.2);
+        --green-bg: #173404; --green-text: #C0DD97; --green-border: #3B6D11;
+        --red-bg: #501313; --red-text: #F7C1C1; --red-border: #A32D2D;
+        --blue-bg: #042C53; --blue-text: #B5D4F4; --blue-border: #185FA5;
+        --amber-bg: #412402; --amber-text: #FAC775; --amber-border: #854F0B;
+      }
+    }
+
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: var(--bg-tertiary); color: var(--text); min-height: 100vh; }
+
+    .page { max-width: 960px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+    /* topbar */
+    .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 12px; }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-mark { width: 36px; height: 36px; background: #1a1a18; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; }
+    @media (prefers-color-scheme: dark) { .logo-mark { background: #f0efeb; color: #1a1a18; } }
+    .logo-text { font-size: 16px; font-weight: 500; }
+    .logo-sub { font-size: 12px; color: var(--text-secondary); }
+
+    .nav-group { display: flex; align-items: center; gap: 6px; background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 4px; }
+    .nav-group button { background: none; border: none; border-radius: var(--radius-md); padding: 6px 12px; cursor: pointer; font-size: 13px; color: var(--text-secondary); transition: background 0.15s, color 0.15s; }
+    .nav-group button:hover { background: var(--bg-secondary); color: var(--text); }
+    .week-label { font-size: 13px; font-weight: 500; color: var(--text); min-width: 156px; text-align: center; }
+
+    /* cards */
+    .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1.25rem; }
+    .card-title { font-size: 11px; font-weight: 500; color: var(--text-tertiary); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* user fields */
+    .fields { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+    .field { display: flex; flex-direction: column; gap: 4px; }
+    .field label { font-size: 12px; color: var(--text-secondary); }
+    .field input { padding: 8px 12px; border: 0.5px solid var(--border-md); border-radius: var(--radius-md); font-size: 14px; background: var(--bg-secondary); color: var(--text); width: 190px; outline: none; transition: border-color 0.15s; }
+    .field input:focus { border-color: #378ADD; }
+
+    /* action bar */
+    .action-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 1rem; padding-top: 1rem; border-top: 0.5px solid var(--border); }
+    .action-bar .hint { font-size: 12px; color: var(--text-tertiary); margin-left: auto; }
+
+    /* pill buttons */
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: var(--radius-md); font-size: 13px; cursor: pointer; border: 0.5px solid var(--border-md); background: var(--bg-secondary); color: var(--text); transition: opacity 0.15s; white-space: nowrap; }
+    .btn:hover { opacity: 0.75; }
+    .btn-green { background: var(--green-bg); color: var(--green-text); border-color: var(--green-border); }
+    .btn-red { background: var(--red-bg); color: var(--red-text); border-color: var(--red-border); }
+    .btn-blue { background: var(--blue-bg); color: var(--blue-text); border-color: var(--blue-border); }
+    .btn-amber { background: var(--amber-bg); color: var(--amber-text); border-color: var(--amber-border); }
+
+    /* stats row */
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 1.25rem; }
+    .stat { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem; }
+    .stat-val { font-size: 24px; font-weight: 500; color: var(--text); line-height: 1; margin-bottom: 4px; }
+    .stat-lbl { font-size: 12px; color: var(--text-secondary); }
+
+    /* calendar */
+    .cal-wrap { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 1.25rem; }
+    .cal-grid { display: grid; grid-template-columns: 88px repeat(5, 1fr); }
+    .cal-grid > * { border-bottom: 0.5px solid var(--border); border-right: 0.5px solid var(--border); }
+    .cal-grid > *:nth-child(6n) { border-right: none; }
+
+    .cell-corner { background: var(--bg-secondary); }
+    .cell-header { background: var(--bg-secondary); padding: 10px 6px; font-size: 12px; font-weight: 500; color: var(--text); text-align: center; }
+    .cell-header.today { background: var(--blue-bg); color: var(--blue-text); }
+    .cell-header.has-event { background: var(--amber-bg); color: var(--amber-text); }
+    .cell-row-label { background: var(--bg-secondary); font-size: 11px; color: var(--text-secondary); display: flex; align-items: center; padding: 0 0 0 10px; }
+    .section-bar { grid-column: 1 / -1; background: var(--bg-secondary); padding: 6px 12px; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); border-right: none !important; }
+    .cell-day-actions { padding: 4px 4px 2px; display: flex; flex-direction: column; gap: 2px; }
+    .book-all-btn { width: 100%; padding: 3px 4px; font-size: 10px; background: none; border: 0.5px dashed var(--border-md); border-radius: 5px; color: var(--text-tertiary); cursor: pointer; transition: background 0.15s, color 0.15s; }
+    .book-all-btn:hover { background: var(--blue-bg); color: var(--blue-text); border-color: var(--blue-border); }
+    .cell-spot { padding: 3px 4px; text-align: center; }
+
+    .chair-btn { width: 100%; padding: 3px 2px; cursor: pointer; border-radius: 6px; border: none; background: none; display: flex; flex-direction: column; align-items: center; gap: 1px; transition: background 0.12s; }
+    .chair-btn:hover:not(:disabled) { background: var(--bg-tertiary); }
+    .chair-btn:disabled { cursor: default; }
+    .chair-name { font-size: 9px; text-align: center; max-width: 58px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.3; }
+    .chair-team { font-size: 9px; text-align: center; max-width: 58px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-tertiary); }
+    .chair-recur { font-size: 8px; color: var(--amber-text); }
+
+    /* my reservations panel */
+    .my-reservations { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1.25rem; }
+    .res-list { display: flex; flex-direction: column; gap: 8px; margin-top: 0.75rem; }
+    .res-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: var(--bg-secondary); border-radius: var(--radius-md); font-size: 13px; }
+    .res-item-info { flex: 1; }
+    .res-item-date { font-weight: 500; color: var(--text); }
+    .res-item-spot { font-size: 12px; color: var(--text-secondary); }
+    .res-item-cancel { background: none; border: 0.5px solid var(--border-md); border-radius: var(--radius-md); padding: 5px 10px; font-size: 12px; cursor: pointer; color: var(--red-text); background: var(--red-bg); border-color: var(--red-border); transition: opacity 0.15s; white-space: nowrap; }
+    .res-item-cancel:hover { opacity: 0.75; }
+    .res-empty { font-size: 13px; color: var(--text-tertiary); padding: 0.5rem 0; }
+
+    /* legend */
+    .legend { display: flex; gap: 20px; flex-wrap: wrap; padding: 0 4px; }
+    .legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text-secondary); }
+
+    /* toast */
+    #toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: var(--bg); border: 0.5px solid var(--border-md); border-radius: var(--radius-md); padding: 10px 20px; font-size: 13px; color: var(--text); opacity: 0; pointer-events: none; transition: opacity 0.2s; white-space: nowrap; z-index: 999; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    #toast.show { opacity: 1; }
+
+    /* modal */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 1rem; }
+    .modal { background: var(--bg); border-radius: var(--radius-lg); border: 0.5px solid var(--border-md); padding: 1.5rem; max-width: 380px; width: 100%; }
+    .modal h3 { font-size: 16px; font-weight: 500; margin-bottom: 1rem; }
+    .modal p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 0.75rem; }
+    .modal p strong { color: var(--text); }
+    .modal-field { margin-bottom: 1rem; }
+    .modal-field label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
+    .modal-field input, .modal-field textarea, .modal-field select { width: 100%; padding: 8px 12px; border: 0.5px solid var(--border-md); border-radius: var(--radius-md); font-size: 14px; background: var(--bg-secondary); color: var(--text); outline: none; font-family: inherit; }
+    .modal-field textarea { resize: vertical; min-height: 64px; }
+    .modal-field input:focus, .modal-field textarea:focus { border-color: #378ADD; }
+    .modal-check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); margin-bottom: 1rem; cursor: pointer; }
+    .modal-check input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; }
+    .modal-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.25rem; }
+    .modal-btns button { padding: 8px 18px; border-radius: var(--radius-md); font-size: 13px; cursor: pointer; border: 0.5px solid var(--border-md); background: var(--bg-secondary); color: var(--text); transition: opacity 0.15s; }
+    .modal-btns button:hover { opacity: 0.8; }
+    .modal-btns .btn-confirm { background: var(--green-bg); color: var(--green-text); border-color: var(--green-border); }
+    .modal-btns .btn-cancel { background: var(--red-bg); color: var(--red-text); border-color: var(--red-border); }
+
+    /* event badge */
+    .event-badge { display: inline-block; font-size: 9px; padding: 1px 5px; border-radius: 4px; background: var(--amber-bg); color: var(--amber-text); border: 0.5px solid var(--amber-border); margin-top: 1px; }
+
+    @media (max-width: 640px) {
+      .cal-grid { grid-template-columns: 68px repeat(5, 1fr); }
+      .cell-row-label { font-size: 10px; padding-left: 6px; }
+      .field input { width: 150px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-mark"><i class="ti ti-building"></i></div>
+      <div>
+        <div class="logo-text">Implanta IT Solutions</div>
+        <div class="logo-sub">Reserva de espaços</div>
+      </div>
+    </div>
+    <div class="nav-group">
+      <button onclick="changeWeek(-1)" aria-label="Semana anterior"><i class="ti ti-chevron-left"></i></button>
+      <span class="week-label" id="week-label"></span>
+      <button onclick="changeWeek(1)" aria-label="Próxima semana"><i class="ti ti-chevron-right"></i></button>
+      <button onclick="goToday()">Hoje</button>
+    </div>
+  </div>
+
+  <!-- user card -->
+  <div class="card">
+    <div class="card-title">Suas informações</div>
+    <div class="fields">
+      <div class="field">
+        <label for="username">Nome</label>
+        <input type="text" id="username" placeholder="ex: Cecília" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="userteam">Time</label>
+        <input type="text" id="userteam" placeholder="ex: Time Azul, Time Vermelho..." autocomplete="off">
+      </div>
+    </div>
+    <div class="action-bar">
+      <button class="btn btn-blue" onclick="showMyReservations()"><i class="ti ti-list"></i> Minhas reservas</button>
+      <button class="btn btn-amber" onclick="askBookAllModal('cowork')"><i class="ti ti-device-desktop"></i> Reservar coworking</button>
+      <button class="btn btn-amber" onclick="askBookAllModal('sala')"><i class="ti ti-door"></i> Reservar sala de reunião</button>
+      <button class="btn" onclick="askBookAllModal('all')"><i class="ti ti-calendar-event"></i> Reservar espaço inteiro</button>
+      <span class="hint" id="limit-hint"></span>
+    </div>
+  </div>
+
+  <!-- stats -->
+  <div class="stats">
+    <div class="stat"><div class="stat-val" id="stat-free">—</div><div class="stat-lbl">Disponíveis hoje</div></div>
+    <div class="stat"><div class="stat-val" id="stat-taken">—</div><div class="stat-lbl">Ocupados hoje</div></div>
+    <div class="stat"><div class="stat-val" id="stat-week">—</div><div class="stat-lbl">Minhas reservas na semana</div></div>
+    <div class="stat"><div class="stat-val" id="stat-people">—</div><div class="stat-lbl">Pessoas esta semana</div></div>
+  </div>
+
+  <!-- calendar -->
+  <div class="cal-wrap">
+    <div id="calendar"></div>
+  </div>
+
+  <!-- legend -->
+  <div class="legend" style="margin-bottom:2rem">
+    <div class="legend-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="9" rx="2" fill="#D3D1C7" stroke="#888780" stroke-width="1.2"/><rect x="3" y="11" width="18" height="4" rx="2" fill="#D3D1C7" stroke="#888780" stroke-width="1.2"/><rect x="5.5" y="15" width="3" height="6" rx="1" fill="#B4B2A9"/><rect x="15.5" y="15" width="3" height="6" rx="1" fill="#B4B2A9"/></svg>
+      Disponível
+    </div>
+    <div class="legend-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="9" rx="2" fill="#C0DD97" stroke="#639922" stroke-width="1.2"/><rect x="3" y="11" width="18" height="4" rx="2" fill="#C0DD97" stroke="#639922" stroke-width="1.2"/><rect x="5.5" y="15" width="3" height="6" rx="1" fill="#97C459"/><rect x="15.5" y="15" width="3" height="6" rx="1" fill="#97C459"/></svg>
+      Sua reserva
+    </div>
+    <div class="legend-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="9" rx="2" fill="#F7C1C1" stroke="#E24B4A" stroke-width="1.2"/><rect x="3" y="11" width="18" height="4" rx="2" fill="#F7C1C1" stroke="#E24B4A" stroke-width="1.2"/><rect x="5.5" y="15" width="3" height="6" rx="1" fill="#F09595"/><rect x="15.5" y="15" width="3" height="6" rx="1" fill="#F09595"/></svg>
+      Ocupado
+    </div>
+    <div class="legend-item">
+      <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="9" rx="2" fill="#FAC775" stroke="#BA7517" stroke-width="1.2"/><rect x="3" y="11" width="18" height="4" rx="2" fill="#FAC775" stroke="#BA7517" stroke-width="1.2"/><rect x="5.5" y="15" width="3" height="6" rx="1" fill="#EF9F27"/><rect x="15.5" y="15" width="3" height="6" rx="1" fill="#EF9F27"/></svg>
+      Recorrente
+    </div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+<div id="modal-container"></div>
+
+<script>
+const SPOTS=[
+  {id:'c1',label:'Posto 1',section:'cowork'},
+  {id:'c2',label:'Posto 2',section:'cowork'},
+  {id:'c3',label:'Posto 3',section:'cowork'},
+  {id:'s1',label:'Lugar 1',section:'sala'},
+  {id:'s2',label:'Lugar 2',section:'sala'},
+  {id:'s3',label:'Lugar 3',section:'sala'},
+  {id:'s4',label:'Lugar 4',section:'sala'},
+  {id:'s5',label:'Lugar 5',section:'sala'},
+  {id:'s6',label:'Lugar 6',section:'sala'},
+  {id:'s7',label:'Lugar 7',section:'sala'},
+  {id:'s8',label:'Lugar 8',section:'sala'},
+  {id:'s9',label:'Lugar 9',section:'sala'},
+];
+const DAYS=['Seg','Ter','Qua','Qui','Sex'];
+const STORAGE_KEY='implanta_bookings_v3';
+let weekOffset=0, bookings={}, pendingAction=null;
+
+// ---------- persistence ----------
+function load(){try{const d=localStorage.getItem(STORAGE_KEY);if(d)bookings=JSON.parse(d);}catch(e){bookings={};}}
+function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(bookings));}catch(e){}}
+
+// ---------- date helpers ----------
+function getMonday(off){
+  const t=new Date(),day=t.getDay();
+  const mon=new Date(t.setDate(t.getDate()-(day===0?6:day-1)));
+  mon.setDate(mon.getDate()+off*7);mon.setHours(0,0,0,0);return mon;
+}
+function dKey(d){return d.toISOString().slice(0,10)}
+function bKey(dk,sid){return dk+'__'+sid}
+function fmt(d){return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}
+function fmtFull(dk){const[y,m,d]=dk.split('-');return`${d}/${m}/${y}`}
+function isToday(d){return d.toDateString()===new Date().toDateString()}
+function isPast(d){const t=new Date();t.setHours(0,0,0,0);return d<t}
+function getWeekDates(){
+  const mon=getMonday(weekOffset);
+  return DAYS.map((_,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d;});
+}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+// ---------- user ----------
+function getName(){return(document.getElementById('username').value||'').trim()}
+function getTeam(){return(document.getElementById('userteam').value||'').trim()}
+
+// ---------- limit check ----------
+function countMyBookingsOnDay(dk){
+  const me=getName();if(!me)return 0;
+  return SPOTS.filter(s=>{const b=bookings[bKey(dk,s.id)];return b&&b.name===me;}).length;
+}
+
+// ---------- recurrent bookings expander ----------
+// recurrent entries stored as { name, team, note, recurrent: true }
+// We expand them at render time for the next 8 weeks
+function getEffectiveBooking(dk, spotId){
+  const direct=bookings[bKey(dk,spotId)];
+  if(direct)return direct;
+  // check recurrent: stored as rec__DAYOFWEEK__spotId  (0=Mon..4=Fri)
+  const d=new Date(dk);
+  const dow=d.getDay()===0?6:d.getDay()-1; // 0=Mon
+  const rk=`rec__${dow}__${spotId}`;
+  if(bookings[rk])return{...bookings[rk],recurrent:true};
+  return null;
+}
+
+// ---------- stats ----------
+function updateStats(){
+  const dates=getWeekDates();
+  const todayKey=dKey(new Date());
+  let free=0,taken=0,myWeek=0;
+  const people=new Set();
+  const me=getName();
+
+  dates.forEach(d=>{
+    const dk=dKey(d);
+    SPOTS.forEach(s=>{
+      const b=getEffectiveBooking(dk,s.id);
+      if(dk===todayKey){b?taken++:free++;}
+      if(b){
+        people.add(b.name);
+        if(me&&b.name===me)myWeek++;
+      }
+    });
+  });
+
+  document.getElementById('stat-free').textContent=free;
+  document.getElementById('stat-taken').textContent=taken;
+  document.getElementById('stat-week').textContent=myWeek;
+  document.getElementById('stat-people').textContent=people.size;
+
+  const me2=getName();
+  const todayCount=countMyBookingsOnDay(todayKey);
+  const hint=document.getElementById('limit-hint');
+  if(me2){
+    hint.textContent=todayCount>0?`Você já tem ${todayCount} reserva${todayCount>1?'s':''} hoje`:'';
+  } else {
+    hint.textContent='';
+  }
+}
+
+// ---------- chair SVG ----------
+function chairSVG(state){
+  const C={
+    free:{f:'#D3D1C7',s:'#888780',l:'#B4B2A9'},
+    mine:{f:'#C0DD97',s:'#639922',l:'#97C459'},
+    taken:{f:'#F7C1C1',s:'#E24B4A',l:'#F09595'},
+    recur:{f:'#FAC775',s:'#BA7517',l:'#EF9F27'},
+    past:{f:'#F1EFE8',s:'#D3D1C7',l:'#D3D1C7'},
+  };
+  const c=C[state]||C.free;
+  return`<svg width="34" height="34" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="5" y="3" width="14" height="9" rx="2" fill="${c.f}" stroke="${c.s}" stroke-width="1.2"/><rect x="3" y="11" width="18" height="4" rx="2" fill="${c.f}" stroke="${c.s}" stroke-width="1.2"/><rect x="5.5" y="15" width="3" height="6" rx="1" fill="${c.l}"/><rect x="15.5" y="15" width="3" height="6" rx="1" fill="${c.l}"/></svg>`;
+}
+
+// ---------- render ----------
+function render(){
+  const dates=getWeekDates();
+  document.getElementById('week-label').textContent=fmt(dates[0])+' – '+fmt(dates[4]);
+  const me=getName();
+  let html='<div class="cal-grid">';
+
+  // corner + day headers
+  html+='<div class="cell-corner" style="border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border)"></div>';
+  dates.forEach((d,i)=>{
+    const dk=dKey(d);
+    let cls='cell-header';
+    if(isToday(d))cls+=' today';
+    const allTaken=SPOTS.every(s=>getEffectiveBooking(dk,s.id));
+    if(allTaken&&!isToday(d))cls+=' has-event';
+    html+=`<div class="${cls}">${DAYS[i]}<br><span style="font-size:11px;font-weight:400">${fmt(d)}</span>`;
+    if(allTaken&&!isPast(d))html+=`<div class="event-badge">lotado</div>`;
+    html+=`</div>`;
+  });
+
+  // "reservar dia todo" row
+  html+='<div class="cell-corner" style="background:var(--bg-secondary);border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border)"></div>';
+  dates.forEach(d=>{
+    const dk=dKey(d);
+    const past=isPast(d);
+    if(past){
+      html+=`<div class="cell-day-actions"></div>`;
+    } else {
+      html+=`<div class="cell-day-actions"><button class="book-all-btn" onclick="askBookSection('${dk}','cowork')" title="Reservar coworking"><i class="ti ti-device-desktop" style="font-size:10px"></i> coworking</button><button class="book-all-btn" onclick="askBookSection('${dk}','sala')" title="Reservar sala de reunião"><i class="ti ti-door" style="font-size:10px"></i> sala reunião</button></div>`;
+    }
+  });
+
+  // spots
+  let lastSec='';
+  SPOTS.forEach(spot=>{
+    if(spot.section!==lastSec){
+      const lbl=spot.section==='cowork'?'🖥 Coworking — 3 postos':'🪑 Sala de reunião — 9 lugares';
+      html+=`<div class="section-bar">${lbl}</div>`;
+      lastSec=spot.section;
+    }
+    html+=`<div class="cell-row-label">${spot.label}</div>`;
+    dates.forEach(d=>{
+      const dk=dKey(d),k=bKey(dk,spot.id);
+      const b=getEffectiveBooking(dk,spot.id);
+      const past=isPast(d);
+      let state,nameLabel,teamLabel,onclick,disabled,noteLabel='';
+      if(b){
+        const ismine=me&&b.name===me;
+        const isrecur=b.recurrent&&ismine;
+        state=isrecur?'recur':ismine?'mine':'taken';
+        nameLabel=b.name;teamLabel=b.team||'';noteLabel=b.note||'';
+        onclick=ismine?`askCancel('${k}','${esc(spot.label)}','${dk}',${b.recurrent?'true':'false'})`:null;
+        disabled=!ismine;
+      } else if(past){
+        state='past';nameLabel='';teamLabel='';disabled=true;onclick=null;
+      } else {
+        state='free';nameLabel='livre';teamLabel='';disabled=false;
+        onclick=`askBook('${k}','${esc(spot.label)}','${dk}')`;
+      }
+      const tc=state==='mine'||state==='recur'?'var(--green-text)':state==='taken'?'var(--red-text)':'var(--text-tertiary)';
+      const fi=state==='free'?'font-style:italic':'';
+      const titleAttr=state==='free'?'Reservar '+spot.label:state==='mine'||state==='recur'?'Cancelar reserva'+(noteLabel?' — '+noteLabel:''):nameLabel+(noteLabel?' — '+noteLabel:'');
+      html+=`<div class="cell-spot">
+        <button class="chair-btn" ${disabled?'disabled':''} ${onclick?`onclick="${onclick}"`:''}
+          title="${esc(titleAttr)}" style="opacity:${state==='past'?0.3:1}">
+          ${chairSVG(state)}
+          <span class="chair-name" style="color:${tc};${fi}">${esc(nameLabel)}</span>
+          ${teamLabel?`<span class="chair-team">${esc(teamLabel)}</span>`:''}
+          ${state==='recur'?'<span class="chair-recur">↻ recorrente</span>':''}
+        </button>
+      </div>`;
+    });
+  });
+
+  html+='</div>';
+  document.getElementById('calendar').innerHTML=html;
+  updateStats();
+}
+
+// ---------- toast ----------
+function showToast(msg,bc){
+  const t=document.getElementById('toast');
+  t.textContent=msg;if(bc)t.style.borderColor=bc;
+  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+// ---------- modal ----------
+function showModal(inner){
+  const c=document.getElementById('modal-container');
+  c.innerHTML=`<div class="modal-backdrop" id="mbg"><div class="modal">${inner}</div></div>`;
+  document.getElementById('mbg').addEventListener('click',e=>{if(e.target.id==='mbg')closeModal();});
+}
+function closeModal(){document.getElementById('modal-container').innerHTML='';}
+
+// ---------- book single ----------
+function askBook(k,label,dk){
+  const me=getName(),team=getTeam();
+  if(!me){showToast('Informe seu nome antes de reservar','#F09595');return;}
+  // limit: 1 reserva por pessoa por dia (por seção)
+  // just warn, don't block
+  const already=countMyBookingsOnDay(dk);
+  const warn=already>=1?`<p style="color:var(--amber-text);font-size:13px"><i class="ti ti-alert-triangle" style="vertical-align:-2px"></i> Você já tem ${already} reserva${already>1?'s':''} neste dia.</p>`:'';
+  pendingAction={type:'book',k,me,team,dk};
+  showModal(`
+    <h3><i class="ti ti-calendar-plus" style="font-size:18px;vertical-align:-2px;margin-right:6px"></i>Reservar lugar</h3>
+    <p><strong>${esc(label)}</strong> &nbsp;·&nbsp; ${fmtFull(dk)}</p>
+    ${warn}
+    <div class="modal-field">
+      <label>Motivo / observação <span style="color:var(--text-tertiary)">(opcional)</span></label>
+      <textarea id="book-note" placeholder="ex: reunião com cliente, foco, squad presencial..."></textarea>
+    </div>
+    <label class="modal-check">
+      <input type="checkbox" id="book-recur">
+      Repetir toda semana neste mesmo lugar e dia
+    </label>
+    <div class="modal-btns">
+      <button onclick="closeModal()">Cancelar</button>
+      <button class="btn-confirm" onclick="confirmBook()">Confirmar reserva</button>
+    </div>`);
+}
+
+function confirmBook(){
+  if(!pendingAction||pendingAction.type!=='book')return;
+  const note=(document.getElementById('book-note').value||'').trim();
+  const recur=document.getElementById('book-recur').checked;
+  const entry={name:pendingAction.me,team:pendingAction.team||'',note};
+  bookings[pendingAction.k]=entry;
+  if(recur){
+    const d=new Date(pendingAction.dk);
+    const dow=d.getDay()===0?6:d.getDay()-1;
+    const spotId=pendingAction.k.split('__')[1];
+    bookings[`rec__${dow}__${spotId}`]={...entry,recurrent:true};
+  }
+  save();closeModal();render();showToast('Reserva confirmada!','#97C459');
+}
+
+// ---------- cancel ----------
+function askCancel(k,label,dk,isRecur){
+  pendingAction={type:'cancel',k,dk,isRecur};
+  if(isRecur){
+    showModal(`
+      <h3><i class="ti ti-trash" style="font-size:18px;vertical-align:-2px;margin-right:6px"></i>Cancelar reserva recorrente</h3>
+      <p>Esta é uma reserva recorrente em <strong>${esc(label)}</strong>.<br>O que você deseja cancelar?</p>
+      <div class="modal-btns" style="flex-direction:column;align-items:stretch;gap:8px">
+        <button class="btn-cancel" style="padding:10px 16px;border-radius:var(--radius-md);font-size:13px;cursor:pointer;border:0.5px solid var(--red-border);background:var(--red-bg);color:var(--red-text)" onclick="confirmCancel('only')">
+          <strong>Somente este dia</strong> — ${fmtFull(dk)}
+        </button>
+        <button class="btn-cancel" style="padding:10px 16px;border-radius:var(--radius-md);font-size:13px;cursor:pointer;border:0.5px solid var(--red-border);background:var(--red-bg);color:var(--red-text)" onclick="confirmCancel('all')">
+          <strong>Todas as repetições</strong> — cancelar a recorrência inteira
+        </button>
+        <button onclick="closeModal()" style="padding:10px 16px;border-radius:var(--radius-md);font-size:13px;cursor:pointer;border:0.5px solid var(--border-md);background:var(--bg-secondary);color:var(--text)">Manter reserva</button>
+      </div>`);
+  } else {
+    showModal(`
+      <h3><i class="ti ti-trash" style="font-size:18px;vertical-align:-2px;margin-right:6px"></i>Cancelar reserva</h3>
+      <p>Cancelar reserva em <strong>${esc(label)}</strong> no dia <strong>${fmtFull(dk)}</strong>?</p>
+      <div class="modal-btns">
+        <button onclick="closeModal()">Manter reserva</button>
+        <button class="btn-cancel" onclick="confirmCancel('only')">Cancelar reserva</button>
+      </div>`);
+  }
+}
+
+function confirmCancel(scope){
+  if(!pendingAction||pendingAction.type!=='cancel')return;
+  // sempre remove a entrada direta do dia
+  delete bookings[pendingAction.k];
+  if(pendingAction.isRecur && scope==='all'){
+    const spotId=pendingAction.k.split('__')[1];
+    const d=new Date(pendingAction.dk);
+    const dow=d.getDay()===0?6:d.getDay()-1;
+    delete bookings[`rec__${dow}__${spotId}`];
+  }
+  save();closeModal();render();
+  const msg=scope==='all'?'Recorrência cancelada.':'Reserva cancelada.';
+  showToast(msg,'#F09595');
+}
+
+// ---------- book all (evento) ----------
+function sectionLabel(sec){
+  if(sec==='cowork')return'Coworking';
+  if(sec==='sala')return'Sala de reunião';
+  return'Espaço inteiro';
+}
+function sectionIcon(sec){
+  if(sec==='cowork')return'ti-device-desktop';
+  if(sec==='sala')return'ti-door';
+  return'ti-calendar-event';
+}
+function filterBySection(spots,sec){
+  if(sec==='all')return spots;
+  return spots.filter(s=>s.section===sec);
+}
+
+function askBookSection(dk,sec){
+  const me=getName(),team=getTeam();
+  if(!me){showToast('Informe seu nome antes de reservar','#F09595');return;}
+  const free=filterBySection(SPOTS,sec).filter(s=>!getEffectiveBooking(dk,s.id));
+  if(free.length===0){showToast(`Todos os lugares do ${sectionLabel(sec)} já estão ocupados`,'#F09595');return;}
+  pendingAction={type:'bookall',dk,me,team,free};
+  showModal(`
+    <h3><i class="ti ${sectionIcon(sec)}" style="font-size:18px;vertical-align:-2px;margin-right:6px"></i>${sectionLabel(sec)}</h3>
+    <p>Reservar <strong>${free.length} lugar${free.length>1?'es':''} disponíve${free.length>1?'is':'l'}</strong> em ${fmtFull(dk)} em seu nome.</p>
+    <div class="modal-field">
+      <label>Motivo / evento</label>
+      <input type="text" id="bookall-note" placeholder="ex: Sprint review, Treinamento, Visita cliente...">
+    </div>
+    <div class="modal-btns">
+      <button onclick="closeModal()">Cancelar</button>
+      <button class="btn-confirm" onclick="confirmBookAll()">Confirmar</button>
+    </div>`);
+}
+
+function askBookAllModal(sec){
+  const me=getName();
+  if(!me){showToast('Informe seu nome antes de reservar','#F09595');return;}
+  const dates=getWeekDates();
+  const opts=dates.map((d,i)=>{
+    const dk=dKey(d);
+    if(isPast(d))return'';
+    const free=filterBySection(SPOTS,sec).filter(s=>!getEffectiveBooking(dk,s.id)).length;
+    return`<option value="${dk}">${DAYS[i]} ${fmt(d)} — ${free} lugar${free!==1?'es':''} livre${free!==1?'s':''}</option>`;
+  }).join('');
+  pendingAction={type:'bookallpick',sec};
+  showModal(`
+    <h3><i class="ti ${sectionIcon(sec)}" style="font-size:18px;vertical-align:-2px;margin-right:6px"></i>${sectionLabel(sec)}</h3>
+    <div class="modal-field">
+      <label>Dia</label>
+      <select id="bookall-day">${opts}</select>
+    </div>
+    <div class="modal-field">
+      <label>Motivo / evento</label>
+      <input type="text" id="bookall-note2" placeholder="ex: Sprint review, Treinamento, Visita cliente...">
+    </div>
+    <div class="modal-btns">
+      <button onclick="closeModal()">Cancelar</button>
+      <button class="btn-confirm" onclick="confirmBookAllPick()">Confirmar</button>
+    </div>`);
+}
+
+function confirmBookAllPick(){
+  const me=getName(),team=getTeam();
+  const dk=document.getElementById('bookall-day').value;
+  const note=(document.getElementById('bookall-note2').value||'').trim();
+  const sec=pendingAction.sec||'all';
+  const free=filterBySection(SPOTS,sec).filter(s=>!getEffectiveBooking(dk,s.id));
+  free.forEach(s=>{bookings[bKey(dk,s.id)]={name:me,team:team||'',note};});
+  save();closeModal();render();showToast(`${free.length} lugar${free.length!==1?'es':''} reservado${free.length!==1?'s':''}!`,'#97C459');
+}
+
+function confirmBookAll(){
+  if(!pendingAction||pendingAction.type!=='bookall')return;
+  const note=(document.getElementById('bookall-note').value||'').trim();
+  pendingAction.free.forEach(s=>{
+    bookings[bKey(pendingAction.dk,s.id)]={name:pendingAction.me,team:pendingAction.team||'',note};
+  });
+  save();closeModal();render();showToast(`${pendingAction.free.length} lugares reservados!`,'#97C459');
+}
+
+// ---------- my reservations panel ----------
+function showMyReservations(){
+  const me=getName();
+  if(!me){showToast('Informe seu nome para ver suas reservas','#F09595');return;}
+  const today=new Date();today.setHours(0,0,0,0);
+  const future=[];
+  // scan next 8 weeks
+  for(let w=0;w<8;w++){
+    for(let di=0;di<5;di++){
+      const d=new Date(getMonday(w-weekOffset));
+      d.setDate(d.getDate()+di);
+      if(d<today)continue;
+      const dk=dKey(d);
+      SPOTS.forEach(s=>{
+        const b=getEffectiveBooking(dk,s.id);
+        if(b&&b.name===me)future.push({dk,spot:s,b,d:new Date(d)});
+      });
+    }
+  }
+  // deduplicate recurrents
+  const seen=new Set();
+  const deduped=future.filter(r=>{
+    const k=r.b.recurrent?`rec__${r.d.getDay()}__${r.spot.id}`:bKey(r.dk,r.spot.id);
+    if(seen.has(k))return false;seen.add(k);return true;
+  });
+
+  let list='';
+  if(deduped.length===0){
+    list='<p class="res-empty">Nenhuma reserva futura encontrada.</p>';
+  } else {
+    list=deduped.slice(0,20).map(r=>{
+      const label=r.b.recurrent?`↻ toda ${['segunda','terça','quarta','quinta','sexta'][r.d.getDay()===0?6:r.d.getDay()-1]}`:`${fmtFull(r.dk)}`;
+      const cancelKey=bKey(r.dk,r.spot.id);
+      return`<div class="res-item">
+        <div style="font-size:20px">🪑</div>
+        <div class="res-item-info">
+          <div class="res-item-date">${label}</div>
+          <div class="res-item-spot">${r.spot.section==='cowork'?'Coworking':'Sala de reunião'} · ${r.spot.label}${r.b.note?' · '+esc(r.b.note):''}</div>
+        </div>
+        <button class="res-item-cancel" onclick="closeModal();setTimeout(()=>askCancel('${cancelKey}','${esc(r.spot.label)}','${r.dk}',${r.b.recurrent?'true':'false'}),100)"><i class="ti ti-x" style="font-size:12px"></i> Cancelar</button>
+      </div>`;
+    }).join('');
+  }
+
+  showModal(`
+    <h3><i class="ti ti-list" style="font-size:18px;vertical-align:-2px;margin-right:6px"></i>Minhas reservas — ${esc(me)}</h3>
+    <div style="max-height:340px;overflow-y:auto;margin:-0.25rem -0.25rem 0">${list}</div>
+    <div class="modal-btns" style="margin-top:1rem"><button onclick="closeModal()">Fechar</button></div>`);
+}
+
+function cancelFromPanel(k,label,dk,isRecur){
+  closeModal();
+  setTimeout(()=>askCancel(k,label,dk,isRecur),100);
+}
+
+// ---------- helpers ----------
+function changeWeek(d){weekOffset+=d;render();}
+function goToday(){weekOffset=0;render();}
+
+document.getElementById('username').addEventListener('input',render);
+document.getElementById('userteam').addEventListener('input',render);
+load();render();
+</script>
+</body>
+</html>
