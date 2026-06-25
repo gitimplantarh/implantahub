@@ -54,6 +54,11 @@
     .nav-group button:hover { background: var(--bg-secondary); color: var(--text); }
     .week-label { font-size: 13px; font-weight: 500; color: var(--text); min-width: 156px; text-align: center; }
 
+    /* loading overlay */
+    .loading-bar { position: fixed; top: 0; left: 0; height: 3px; background: #378ADD; width: 0%; transition: width 0.3s; z-index: 9999; }
+    .loading-bar.active { width: 70%; }
+    .loading-bar.done { width: 100%; transition: width 0.1s; }
+
     /* cards */
     .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1.25rem; }
     .card-title { font-size: 11px; font-weight: 500; color: var(--text-tertiary); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -156,6 +161,7 @@
   </style>
 </head>
 <body>
+<div class="loading-bar" id="loading-bar"></div>
 <div class="page">
 
   <div class="topbar">
@@ -250,18 +256,70 @@ const SPOTS=[
   {id:'s9',label:'Lugar 9',section:'sala'},
 ];
 const DAYS=['Seg','Ter','Qua','Qui','Sex'];
-const STORAGE_KEY='implanta_bookings_v3';
 let weekOffset=0, bookings={}, pendingAction=null;
 
-// ---------- persistence ----------
-function load(){try{const d=localStorage.getItem(STORAGE_KEY);if(d)bookings=JSON.parse(d);}catch(e){bookings={};}}
-function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(bookings));}catch(e){}}
+// ---------- loading bar ----------
+function loadingStart(){const b=document.getElementById('loading-bar');b.className='loading-bar active';}
+function loadingDone(){const b=document.getElementById('loading-bar');b.className='loading-bar done';setTimeout(()=>{b.className='loading-bar';b.style.width='0%';},400);}
+
+// ---------- API ----------
+async function apiFetch(path, options={}){
+  const res = await fetch(path, {
+    headers:{'Content-Type':'application/json'},
+    ...options
+  });
+  if(!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+async function loadBookings(){
+  loadingStart();
+  try {
+    const monday = dKey(getMonday(weekOffset));
+    const data = await apiFetch(`/api/bookings?week=${monday}`);
+    bookings = {};
+    (data.bookings || []).forEach(b => {
+      if(b.recurrent){
+        // chave recorrente: rec__dow__spotId
+        bookings[`rec__${b.rec_dow}__${b.spot_id}`] = {
+          id: b.id,
+          name: b.name,
+          team: b.team,
+          note: b.note,
+          recurrent: true
+        };
+      } else {
+        bookings[`${b.day_key}__${b.spot_id}`] = {
+          id: b.id,
+          name: b.name,
+          team: b.team,
+          note: b.note,
+          recurrent: false
+        };
+      }
+    });
+    render();
+  } catch(e){
+    showToast('Erro ao carregar reservas. Tente novamente.','#F09595');
+    console.error(e);
+  }
+  loadingDone();
+}
+
+async function apiCreate(payload){
+  return apiFetch('/api/bookings',{method:'POST',body:JSON.stringify(payload)});
+}
+
+async function apiDelete(id){
+  return apiFetch(`/api/bookings/${id}`,{method:'DELETE'});
+}
 
 // ---------- date helpers ----------
 function getMonday(off){
   const t=new Date(),day=t.getDay();
-  const mon=new Date(t.setDate(t.getDate()-(day===0?6:day-1)));
-  mon.setDate(mon.getDate()+off*7);mon.setHours(0,0,0,0);return mon;
+  const mon=new Date(t);
+  mon.setDate(t.getDate()-(day===0?6:day-1)+off*7);
+  mon.setHours(0,0,0,0);return mon;
 }
 function dKey(d){return d.toISOString().slice(0,10)}
 function bKey(dk,sid){return dk+'__'+sid}
@@ -285,101 +343,46 @@ function countMyBookingsOnDay(dk){
   return SPOTS.filter(s=>{const b=bookings[bKey(dk,s.id)];return b&&b.name===me;}).length;
 }
 
-// ---------- recurrent bookings expander ----------
-// recurrent entries stored as { name, team, note, recurrent: true }
-// We expand them at render time for the next 8 weeks
-function getEffectiveBooking(dk, spotId){
+// ---------- recurrent expander ----------
+function getEffectiveBooking(dk,spotId){
+  // reserva direta tem prioridade
   const direct=bookings[bKey(dk,spotId)];
   if(direct)return direct;
-  // check recurrent: stored as rec__DAYOFWEEK__spotId  (0=Mon..4=Fri)
-  const d=new Date(dk);
-  const dow=d.getDay()===0?6:d.getDay()-1; // 0=Mon
-  const rk=`rec__${dow}__${spotId}`;
-  if(bookings[rk])return{...bookings[rk],recurrent:true};
+  // verifica recorrente pelo dia da semana
+  const d=new Date(dk+'T00:00:00');
+  const dow=d.getDay()===0?6:d.getDay()-1; // 0=seg,4=sex
+  const rec=bookings[`rec__${dow}__${spotId}`];
+  if(rec)return{...rec,recurrent:true};
   return null;
-}
-
-// ---------- stats ----------
-function updateStats(){
-  const dates=getWeekDates();
-  const todayKey=dKey(new Date());
-  let free=0,taken=0,myWeek=0;
-  const people=new Set();
-  const me=getName();
-
-  dates.forEach(d=>{
-    const dk=dKey(d);
-    SPOTS.forEach(s=>{
-      const b=getEffectiveBooking(dk,s.id);
-      if(dk===todayKey){b?taken++:free++;}
-      if(b){
-        people.add(b.name);
-        if(me&&b.name===me)myWeek++;
-      }
-    });
-  });
-
-  document.getElementById('stat-free').textContent=free;
-  document.getElementById('stat-taken').textContent=taken;
-  document.getElementById('stat-week').textContent=myWeek;
-  document.getElementById('stat-people').textContent=people.size;
-
-  const me2=getName();
-  const todayCount=countMyBookingsOnDay(todayKey);
-  const hint=document.getElementById('limit-hint');
-  if(me2){
-    hint.textContent=todayCount>0?`Você já tem ${todayCount} reserva${todayCount>1?'s':''} hoje`:'';
-  } else {
-    hint.textContent='';
-  }
 }
 
 // ---------- chair SVG ----------
 function chairSVG(state){
-  const C={
-    free:{f:'#D3D1C7',s:'#888780',l:'#B4B2A9'},
-    mine:{f:'#C0DD97',s:'#639922',l:'#97C459'},
-    taken:{f:'#F7C1C1',s:'#E24B4A',l:'#F09595'},
-    recur:{f:'#FAC775',s:'#BA7517',l:'#EF9F27'},
-    past:{f:'#F1EFE8',s:'#D3D1C7',l:'#D3D1C7'},
-  };
-  const c=C[state]||C.free;
-  return`<svg width="34" height="34" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="5" y="3" width="14" height="9" rx="2" fill="${c.f}" stroke="${c.s}" stroke-width="1.2"/><rect x="3" y="11" width="18" height="4" rx="2" fill="${c.f}" stroke="${c.s}" stroke-width="1.2"/><rect x="5.5" y="15" width="3" height="6" rx="1" fill="${c.l}"/><rect x="15.5" y="15" width="3" height="6" rx="1" fill="${c.l}"/></svg>`;
+  const fills={free:'#D3D1C7',mine:'#C0DD97',taken:'#F7C1C1',recur:'#FAC775',past:'#D3D1C7'};
+  const strokes={free:'#888780',mine:'#639922',taken:'#E24B4A',recur:'#BA7517',past:'#888780'};
+  const legs={free:'#B4B2A9',mine:'#97C459',taken:'#F09595',recur:'#EF9F27',past:'#B4B2A9'};
+  const f=fills[state]||fills.free,s=strokes[state]||strokes.free,l=legs[state]||legs.free;
+  return`<svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
+    <rect x="5" y="3" width="14" height="9" rx="2" fill="${f}" stroke="${s}" stroke-width="1.2"/>
+    <rect x="3" y="11" width="18" height="4" rx="2" fill="${f}" stroke="${s}" stroke-width="1.2"/>
+    <rect x="5.5" y="15" width="3" height="6" rx="1" fill="${l}"/>
+    <rect x="15.5" y="15" width="3" height="6" rx="1" fill="${l}"/>
+  </svg>`;
 }
 
 // ---------- render ----------
 function render(){
   const dates=getWeekDates();
-  document.getElementById('week-label').textContent=fmt(dates[0])+' – '+fmt(dates[4]);
+  const mon=getMonday(weekOffset),fri=new Date(mon);fri.setDate(mon.getDate()+4);
+  const fmtD=d=>d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+  document.getElementById('week-label').textContent=`${fmtD(mon)} – ${fmtD(fri)}`;
   const me=getName();
   let html='<div class="cal-grid">';
-
-  // corner + day headers
-  html+='<div class="cell-corner" style="border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border)"></div>';
+  html+='<div class="cell-corner"></div>';
   dates.forEach((d,i)=>{
-    const dk=dKey(d);
-    let cls='cell-header';
-    if(isToday(d))cls+=' today';
-    const allTaken=SPOTS.every(s=>getEffectiveBooking(dk,s.id));
-    if(allTaken&&!isToday(d))cls+=' has-event';
-    html+=`<div class="${cls}">${DAYS[i]}<br><span style="font-size:11px;font-weight:400">${fmt(d)}</span>`;
-    if(allTaken&&!isPast(d))html+=`<div class="event-badge">lotado</div>`;
-    html+=`</div>`;
+    const td=isToday(d)?'today':'';
+    html+=`<div class="cell-header ${td}">${DAYS[i]}<br><span style="font-weight:400;font-size:11px">${fmt(d)}</span></div>`;
   });
-
-  // "reservar dia todo" row
-  html+='<div class="cell-corner" style="background:var(--bg-secondary);border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border)"></div>';
-  dates.forEach(d=>{
-    const dk=dKey(d);
-    const past=isPast(d);
-    if(past){
-      html+=`<div class="cell-day-actions"></div>`;
-    } else {
-      html+=`<div class="cell-day-actions"><button class="book-all-btn" onclick="askBookSection('${dk}','cowork')" title="Reservar coworking"><i class="ti ti-device-desktop" style="font-size:10px"></i> coworking</button><button class="book-all-btn" onclick="askBookSection('${dk}','sala')" title="Reservar sala de reunião"><i class="ti ti-door" style="font-size:10px"></i> sala reunião</button></div>`;
-    }
-  });
-
-  // spots
   let lastSec='';
   SPOTS.forEach(spot=>{
     if(spot.section!==lastSec){
@@ -389,7 +392,7 @@ function render(){
     }
     html+=`<div class="cell-row-label">${spot.label}</div>`;
     dates.forEach(d=>{
-      const dk=dKey(d),k=bKey(dk,spot.id);
+      const dk=dKey(d);
       const b=getEffectiveBooking(dk,spot.id);
       const past=isPast(d);
       let state,nameLabel,teamLabel,onclick,disabled,noteLabel='';
@@ -398,13 +401,13 @@ function render(){
         const isrecur=b.recurrent&&ismine;
         state=isrecur?'recur':ismine?'mine':'taken';
         nameLabel=b.name;teamLabel=b.team||'';noteLabel=b.note||'';
-        onclick=ismine?`askCancel('${k}','${esc(spot.label)}','${dk}',${b.recurrent?'true':'false'})`:null;
+        onclick=ismine?`askCancel('${bKey(dk,spot.id)}','${esc(spot.label)}','${dk}',${b.recurrent?'true':'false'},${b.id||'null'})`:null;
         disabled=!ismine;
       } else if(past){
         state='past';nameLabel='';teamLabel='';disabled=true;onclick=null;
       } else {
         state='free';nameLabel='livre';teamLabel='';disabled=false;
-        onclick=`askBook('${k}','${esc(spot.label)}','${dk}')`;
+        onclick=`askBook('${bKey(dk,spot.id)}','${esc(spot.label)}','${dk}','${spot.id}')`;
       }
       const tc=state==='mine'||state==='recur'?'var(--green-text)':state==='taken'?'var(--red-text)':'var(--text-tertiary)';
       const fi=state==='free'?'font-style:italic':'';
@@ -420,10 +423,35 @@ function render(){
       </div>`;
     });
   });
-
   html+='</div>';
   document.getElementById('calendar').innerHTML=html;
   updateStats();
+}
+
+// ---------- stats ----------
+function updateStats(){
+  const me=getName();
+  const today=dKey(new Date());
+  const dates=getWeekDates();
+  let free=0,taken=0,myWeek=0;const people=new Set();
+  SPOTS.forEach(s=>{
+    const b=getEffectiveBooking(today,s.id);
+    if(b){taken++;people.add(b.name);}else free++;
+  });
+  dates.forEach(d=>{
+    const dk=dKey(d);
+    SPOTS.forEach(s=>{
+      const b=getEffectiveBooking(dk,s.id);
+      if(b){
+        people.add(b.name);
+        if(me&&b.name===me)myWeek++;
+      }
+    });
+  });
+  document.getElementById('stat-free').textContent=free;
+  document.getElementById('stat-taken').textContent=taken;
+  document.getElementById('stat-week').textContent=myWeek;
+  document.getElementById('stat-people').textContent=people.size;
 }
 
 // ---------- toast ----------
@@ -442,14 +470,15 @@ function showModal(inner){
 function closeModal(){document.getElementById('modal-container').innerHTML='';}
 
 // ---------- book single ----------
-function askBook(k,label,dk){
+function askBook(k,label,dk,spotId){
   const me=getName(),team=getTeam();
   if(!me){showToast('Informe seu nome antes de reservar','#F09595');return;}
-  // limit: 1 reserva por pessoa por dia (por seção)
-  // just warn, don't block
   const already=countMyBookingsOnDay(dk);
   const warn=already>=1?`<p style="color:var(--amber-text);font-size:13px"><i class="ti ti-alert-triangle" style="vertical-align:-2px"></i> Você já tem ${already} reserva${already>1?'s':''} neste dia.</p>`:'';
-  pendingAction={type:'book',k,me,team,dk};
+  // calcular dow para recorrência
+  const d=new Date(dk+'T00:00:00');
+  const dow=d.getDay()===0?6:d.getDay()-1;
+  pendingAction={type:'book',k,me,team,dk,spotId,dow};
   showModal(`
     <h3><i class="ti ti-calendar-plus" style="font-size:18px;vertical-align:-2px;margin-right:6px"></i>Reservar lugar</h3>
     <p><strong>${esc(label)}</strong> &nbsp;·&nbsp; ${fmtFull(dk)}</p>
@@ -468,24 +497,45 @@ function askBook(k,label,dk){
     </div>`);
 }
 
-function confirmBook(){
+async function confirmBook(){
   if(!pendingAction||pendingAction.type!=='book')return;
   const note=(document.getElementById('book-note').value||'').trim();
   const recur=document.getElementById('book-recur').checked;
-  const entry={name:pendingAction.me,team:pendingAction.team||'',note};
-  bookings[pendingAction.k]=entry;
-  if(recur){
-    const d=new Date(pendingAction.dk);
-    const dow=d.getDay()===0?6:d.getDay()-1;
-    const spotId=pendingAction.k.split('__')[1];
-    bookings[`rec__${dow}__${spotId}`]={...entry,recurrent:true};
+  closeModal();
+  loadingStart();
+  try {
+    if(recur){
+      await apiCreate({
+        spot_id: pendingAction.spotId,
+        day_key: pendingAction.dk,
+        name: pendingAction.me,
+        team: pendingAction.team||'',
+        note,
+        recurrent: true,
+        rec_dow: pendingAction.dow
+      });
+    } else {
+      await apiCreate({
+        spot_id: pendingAction.spotId,
+        day_key: pendingAction.dk,
+        name: pendingAction.me,
+        team: pendingAction.team||'',
+        note,
+        recurrent: false
+      });
+    }
+    await loadBookings();
+    showToast('Reserva confirmada!','#97C459');
+  } catch(e){
+    showToast('Erro ao reservar. Tente novamente.','#F09595');
+    console.error(e);
   }
-  save();closeModal();render();showToast('Reserva confirmada!','#97C459');
+  loadingDone();
 }
 
 // ---------- cancel ----------
-function askCancel(k,label,dk,isRecur){
-  pendingAction={type:'cancel',k,dk,isRecur};
+function askCancel(k,label,dk,isRecur,bookingId){
+  pendingAction={type:'cancel',k,dk,isRecur,bookingId};
   if(isRecur){
     showModal(`
       <h3><i class="ti ti-trash" style="font-size:18px;vertical-align:-2px;margin-right:6px"></i>Cancelar reserva recorrente</h3>
@@ -510,36 +560,41 @@ function askCancel(k,label,dk,isRecur){
   }
 }
 
-function confirmCancel(scope){
+async function confirmCancel(scope){
   if(!pendingAction||pendingAction.type!=='cancel')return;
-  // sempre remove a entrada direta do dia
-  delete bookings[pendingAction.k];
-  if(pendingAction.isRecur && scope==='all'){
-    const spotId=pendingAction.k.split('__')[1];
-    const d=new Date(pendingAction.dk);
-    const dow=d.getDay()===0?6:d.getDay()-1;
-    delete bookings[`rec__${dow}__${spotId}`];
+  closeModal();
+  loadingStart();
+  try {
+    if(scope==='all'&&pendingAction.isRecur){
+      // cancelar recorrência: busca o id da reserva recorrente
+      const spotId=pendingAction.k.split('__')[1];
+      const d=new Date(pendingAction.dk+'T00:00:00');
+      const dow=d.getDay()===0?6:d.getDay()-1;
+      const recKey=`rec__${dow}__${spotId}`;
+      const recBooking=bookings[recKey];
+      if(recBooking&&recBooking.id){
+        await apiDelete(recBooking.id);
+      }
+    } else {
+      // cancelar só este dia
+      if(pendingAction.bookingId){
+        await apiDelete(pendingAction.bookingId);
+      }
+    }
+    await loadBookings();
+    const msg=scope==='all'?'Recorrência cancelada.':'Reserva cancelada.';
+    showToast(msg,'#F09595');
+  } catch(e){
+    showToast('Erro ao cancelar. Tente novamente.','#F09595');
+    console.error(e);
   }
-  save();closeModal();render();
-  const msg=scope==='all'?'Recorrência cancelada.':'Reserva cancelada.';
-  showToast(msg,'#F09595');
+  loadingDone();
 }
 
-// ---------- book all (evento) ----------
-function sectionLabel(sec){
-  if(sec==='cowork')return'Coworking';
-  if(sec==='sala')return'Sala de reunião';
-  return'Espaço inteiro';
-}
-function sectionIcon(sec){
-  if(sec==='cowork')return'ti-device-desktop';
-  if(sec==='sala')return'ti-door';
-  return'ti-calendar-event';
-}
-function filterBySection(spots,sec){
-  if(sec==='all')return spots;
-  return spots.filter(s=>s.section===sec);
-}
+// ---------- book all ----------
+function sectionLabel(sec){if(sec==='cowork')return'Coworking';if(sec==='sala')return'Sala de reunião';return'Espaço inteiro';}
+function sectionIcon(sec){if(sec==='cowork')return'ti-device-desktop';if(sec==='sala')return'ti-door';return'ti-calendar-event';}
+function filterBySection(spots,sec){if(sec==='all')return spots;return spots.filter(s=>s.section===sec);}
 
 function askBookSection(dk,sec){
   const me=getName(),team=getTeam();
@@ -570,7 +625,7 @@ function askBookAllModal(sec){
     const free=filterBySection(SPOTS,sec).filter(s=>!getEffectiveBooking(dk,s.id)).length;
     return`<option value="${dk}">${DAYS[i]} ${fmt(d)} — ${free} lugar${free!==1?'es':''} livre${free!==1?'s':''}</option>`;
   }).join('');
-  pendingAction={type:'bookallpick',sec};
+  pendingAction={type:'bookallpick',sec,me,team:getTeam()};
   showModal(`
     <h3><i class="ti ${sectionIcon(sec)}" style="font-size:18px;vertical-align:-2px;margin-right:6px"></i>${sectionLabel(sec)}</h3>
     <div class="modal-field">
@@ -587,31 +642,50 @@ function askBookAllModal(sec){
     </div>`);
 }
 
-function confirmBookAllPick(){
-  const me=getName(),team=getTeam();
+async function confirmBookAllPick(){
   const dk=document.getElementById('bookall-day').value;
   const note=(document.getElementById('bookall-note2').value||'').trim();
   const sec=pendingAction.sec||'all';
+  const me=pendingAction.me,team=pendingAction.team||'';
   const free=filterBySection(SPOTS,sec).filter(s=>!getEffectiveBooking(dk,s.id));
-  free.forEach(s=>{bookings[bKey(dk,s.id)]={name:me,team:team||'',note};});
-  save();closeModal();render();showToast(`${free.length} lugar${free.length!==1?'es':''} reservado${free.length!==1?'s':''}!`,'#97C459');
+  closeModal();
+  loadingStart();
+  try {
+    await Promise.all(free.map(s=>apiCreate({spot_id:s.id,day_key:dk,name:me,team,note,recurrent:false})));
+    await loadBookings();
+    showToast(`${free.length} lugar${free.length!==1?'es':''} reservado${free.length!==1?'s':''}!`,'#97C459');
+  } catch(e){
+    showToast('Erro ao reservar. Tente novamente.','#F09595');
+    console.error(e);
+  }
+  loadingDone();
 }
 
-function confirmBookAll(){
+async function confirmBookAll(){
   if(!pendingAction||pendingAction.type!=='bookall')return;
   const note=(document.getElementById('bookall-note').value||'').trim();
-  pendingAction.free.forEach(s=>{
-    bookings[bKey(pendingAction.dk,s.id)]={name:pendingAction.me,team:pendingAction.team||'',note};
-  });
-  save();closeModal();render();showToast(`${pendingAction.free.length} lugares reservados!`,'#97C459');
+  closeModal();
+  loadingStart();
+  try {
+    await Promise.all(pendingAction.free.map(s=>apiCreate({
+      spot_id:s.id,day_key:pendingAction.dk,name:pendingAction.me,team:pendingAction.team||'',note,recurrent:false
+    })));
+    await loadBookings();
+    showToast(`${pendingAction.free.length} lugares reservados!`,'#97C459');
+  } catch(e){
+    showToast('Erro ao reservar. Tente novamente.','#F09595');
+    console.error(e);
+  }
+  loadingDone();
 }
 
-// ---------- my reservations panel ----------
+// ---------- my reservations ----------
 function showMyReservations(){
   const me=getName();
   if(!me){showToast('Informe seu nome para ver suas reservas','#F09595');return;}
   const today=new Date();today.setHours(0,0,0,0);
   const future=[];
+  const dates=getWeekDates();
   // scan next 8 weeks
   for(let w=0;w<8;w++){
     for(let di=0;di<5;di++){
@@ -625,13 +699,11 @@ function showMyReservations(){
       });
     }
   }
-  // deduplicate recurrents
   const seen=new Set();
   const deduped=future.filter(r=>{
     const k=r.b.recurrent?`rec__${r.d.getDay()}__${r.spot.id}`:bKey(r.dk,r.spot.id);
     if(seen.has(k))return false;seen.add(k);return true;
   });
-
   let list='';
   if(deduped.length===0){
     list='<p class="res-empty">Nenhuma reserva futura encontrada.</p>';
@@ -645,29 +717,30 @@ function showMyReservations(){
           <div class="res-item-date">${label}</div>
           <div class="res-item-spot">${r.spot.section==='cowork'?'Coworking':'Sala de reunião'} · ${r.spot.label}${r.b.note?' · '+esc(r.b.note):''}</div>
         </div>
-        <button class="res-item-cancel" onclick="closeModal();setTimeout(()=>askCancel('${cancelKey}','${esc(r.spot.label)}','${r.dk}',${r.b.recurrent?'true':'false'}),100)"><i class="ti ti-x" style="font-size:12px"></i> Cancelar</button>
+        <button class="res-item-cancel" onclick="closeModal();setTimeout(()=>askCancel('${cancelKey}','${esc(r.spot.label)}','${r.dk}',${r.b.recurrent?'true':'false'},${r.b.id||'null'}),100)"><i class="ti ti-x" style="font-size:12px"></i> Cancelar</button>
       </div>`;
     }).join('');
   }
-
   showModal(`
     <h3><i class="ti ti-list" style="font-size:18px;vertical-align:-2px;margin-right:6px"></i>Minhas reservas — ${esc(me)}</h3>
     <div style="max-height:340px;overflow-y:auto;margin:-0.25rem -0.25rem 0">${list}</div>
     <div class="modal-btns" style="margin-top:1rem"><button onclick="closeModal()">Fechar</button></div>`);
 }
 
-function cancelFromPanel(k,label,dk,isRecur){
-  closeModal();
-  setTimeout(()=>askCancel(k,label,dk,isRecur),100);
-}
-
-// ---------- helpers ----------
-function changeWeek(d){weekOffset+=d;render();}
-function goToday(){weekOffset=0;render();}
+// ---------- week nav ----------
+function changeWeek(d){weekOffset+=d;loadBookings();}
+function goToday(){weekOffset=0;loadBookings();}
 
 document.getElementById('username').addEventListener('input',render);
 document.getElementById('userteam').addEventListener('input',render);
-load();render();
+
+// Salva nome/time no localStorage para comodidade
+document.getElementById('username').addEventListener('change',e=>localStorage.setItem('ih_name',e.target.value));
+document.getElementById('userteam').addEventListener('change',e=>localStorage.setItem('ih_team',e.target.value));
+document.getElementById('username').value=localStorage.getItem('ih_name')||'';
+document.getElementById('userteam').value=localStorage.getItem('ih_team')||'';
+
+loadBookings();
 </script>
 </body>
 </html>

@@ -1,0 +1,12 @@
+{
+  "name": "implantahub",
+  "version": "1.0.0",
+  "description": "Sistema de reservas de espaços — Implanta IT Solutions",
+  "main": "index.js",
+  "dependencies": {
+    "pg": "^8.11.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
