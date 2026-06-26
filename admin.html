@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ImplantaHub — Admin</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:#eeede9;color:#1a1a18;min-height:100vh}
+
+/* ── Login ── */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
+.login-card{background:#fff;border:0.5px solid rgba(0,0,0,0.12);border-radius:16px;padding:2rem;width:100%;max-width:360px}
+.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:1.75rem}
+.login-logo-mark{width:40px;height:40px;background:#1a1a18;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px}
+.login-logo-text{font-size:16px;font-weight:500}
+.login-logo-sub{font-size:12px;color:#6b6b67}
+.login-title{font-size:20px;font-weight:500;margin-bottom:6px}
+.login-sub{font-size:13px;color:#6b6b67;margin-bottom:1.5rem}
+.login-field{margin-bottom:1rem}
+.login-field label{display:block;font-size:12px;color:#6b6b67;margin-bottom:4px}
+.login-field input{width:100%;padding:10px 12px;border:0.5px solid rgba(0,0,0,0.22);border-radius:8px;font-size:14px;background:#f5f5f3;color:#1a1a18;outline:none;transition:border-color .15s}
+.login-field input:focus{border-color:#378ADD;background:#fff}
+.login-btn{width:100%;padding:11px;border-radius:8px;border:none;background:#1a1a18;color:#fff;font-size:14px;font-weight:500;cursor:pointer;transition:opacity .15s;margin-top:.5rem}
+.login-btn:hover{opacity:.85}
+.login-err{font-size:12px;color:#791F1F;margin-top:.75rem;display:none}
+.login-err.show{display:block}
+
+/* ── Admin panel ── */
+.panel{display:none;max-width:1020px;margin:0 auto;padding:2rem 1.25rem 4rem}
+.panel.show{display:block}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:12px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-mark{width:36px;height:36px;background:#1a1a18;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px}
+.logo-text{font-size:16px;font-weight:500}
+.logo-sub{font-size:12px;color:#6b6b67}
+.admin-badge{background:#FCEBEB;color:#791F1F;border:0.5px solid #F09595;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:500}
+.logout-btn{background:none;border:0.5px solid rgba(0,0,0,0.22);border-radius:8px;padding:6px 14px;font-size:13px;cursor:pointer;color:#6b6b67}
+.logout-btn:hover{background:#f5f5f3}
+
+/* ── Filters ── */
+.filters{background:#fff;border:0.5px solid rgba(0,0,0,0.12);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.filter-field{display:flex;flex-direction:column;gap:4px}
+.filter-field label{font-size:12px;color:#6b6b67}
+.filter-field input,.filter-field select{padding:7px 11px;border:0.5px solid rgba(0,0,0,0.22);border-radius:8px;font-size:13px;background:#f5f5f3;color:#1a1a18;outline:none}
+.filter-field input:focus,.filter-field select:focus{border-color:#378ADD;background:#fff}
+.filter-btn{padding:8px 16px;border-radius:8px;border:none;background:#1a1a18;color:#fff;font-size:13px;cursor:pointer;transition:opacity .15s}
+.filter-btn:hover{opacity:.8}
+.filter-btn.secondary{background:#f5f5f3;color:#1a1a18;border:0.5px solid rgba(0,0,0,0.22)}
+
+/* ── Stats ── */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.25rem}
+.stat{background:#fff;border:0.5px solid rgba(0,0,0,0.12);border-radius:12px;padding:.875rem 1rem}
+.stat-val{font-size:22px;font-weight:500;line-height:1;margin-bottom:3px}
+.stat-lbl{font-size:11px;color:#6b6b67}
+
+/* ── Table ── */
+.table-wrap{background:#fff;border:0.5px solid rgba(0,0,0,0.12);border-radius:12px;overflow:hidden;margin-bottom:1.25rem}
+.table-header{padding:10px 16px;background:#f5f5f3;border-bottom:1px solid rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.table-title{font-size:13px;font-weight:500;color:#6b6b67}
+.delete-all-btn{padding:6px 14px;border-radius:8px;border:0.5px solid #F09595;background:#FCEBEB;color:#791F1F;font-size:12px;cursor:pointer;transition:opacity .15s}
+.delete-all-btn:hover{opacity:.75}
+table{width:100%;border-collapse:collapse}
+thead th{background:#f5f5f3;padding:10px 14px;font-size:11px;font-weight:500;color:#6b6b67;text-align:left;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(0,0,0,0.08)}
+tbody tr{border-bottom:0.5px solid rgba(0,0,0,0.06);transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#f9f9f8}
+td{padding:10px 14px;font-size:13px;color:#1a1a18;vertical-align:middle}
+.td-date{font-weight:500;white-space:nowrap;font-size:12px;color:#6b6b67}
+.td-spot{font-size:11px;padding:2px 7px;border-radius:10px;font-weight:500;white-space:nowrap}
+.td-spot.cowork{background:#E6F1FB;color:#0C447C}
+.td-spot.sala{background:#EAF3DE;color:#27500A}
+.td-name{font-weight:500}
+.td-team{font-size:12px;color:#6b6b67}
+.td-note{font-size:12px;color:#9b9b97;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.td-type{font-size:11px;padding:2px 7px;border-radius:10px;font-weight:500}
+.td-type.fixed{background:#FAEEDA;color:#633806}
+.td-type.recur{background:#FAC775;color:#633806}
+.td-type.normal{background:#f5f5f3;color:#6b6b67}
+.del-btn{padding:5px 12px;border-radius:7px;border:0.5px solid #F09595;background:#FCEBEB;color:#791F1F;font-size:12px;cursor:pointer;transition:opacity .15s;white-space:nowrap}
+.del-btn:hover{opacity:.75}
+.del-btn:disabled{opacity:.4;cursor:default}
+
+/* ── Empty / loading ── */
+.empty{padding:2.5rem;text-align:center;color:#9b9b97;font-size:14px}
+.loading{padding:2rem;text-align:center;color:#9b9b97;font-size:13px}
+
+/* ── Toast ── */
+#toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#1a1a18;color:#fff;border-radius:8px;padding:10px 20px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;white-space:nowrap;z-index:999}
+#toast.show{opacity:1}
+
+/* ── Modal ── */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;z-index:100;padding:1rem}
+.modal{background:#fff;border-radius:12px;border:0.5px solid rgba(0,0,0,.2);padding:1.5rem;max-width:380px;width:100%}
+.modal h3{font-size:16px;font-weight:500;margin-bottom:.75rem}
+.modal p{font-size:14px;color:#6b6b67;line-height:1.6;margin-bottom:1.25rem}
+.modal p strong{color:#1a1a18}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end}
+.modal-btns button{padding:8px 18px;border-radius:8px;font-size:13px;cursor:pointer;border:0.5px solid rgba(0,0,0,.22);background:#f5f5f3;color:#1a1a18;transition:opacity .15s}
+.modal-btns button:hover{opacity:.8}
+.modal-btns .btn-del{background:#FCEBEB;color:#791F1F;border-color:#F09595}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-mark">🏢</div>
+      <div>
+        <div class="login-logo-text">ImplantaHub</div>
+        <div class="login-logo-sub">Painel Administrativo</div>
+      </div>
+    </div>
+    <div class="login-title">Acesso restrito</div>
+    <div class="login-sub">Entre com sua senha de administradora para continuar.</div>
+    <div class="login-field">
+      <label>Senha</label>
+      <input type="password" id="pwd-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">Entrar</button>
+    <div class="login-err" id="login-err">Senha incorreta. Tente novamente.</div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="panel" id="admin-panel">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-mark">🏢</div>
+      <div>
+        <div class="logo-text">ImplantaHub</div>
+        <div class="logo-sub">Painel Administrativo</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="admin-badge">👑 Admin</span>
+      <a href="/" style="text-decoration:none"><button class="logout-btn">← Voltar ao sistema</button></a>
+      <button class="logout-btn" onclick="doLogout()">Sair</button>
+    </div>
+  </div>
+
+  <div class="filters">
+    <div class="filter-field">
+      <label>De</label>
+      <input type="date" id="filter-from">
+    </div>
+    <div class="filter-field">
+      <label>Até</label>
+      <input type="date" id="filter-to">
+    </div>
+    <div class="filter-field">
+      <label>Nome / Time</label>
+      <input type="text" id="filter-name" placeholder="ex: Cecília, Time Azul..." style="width:180px">
+    </div>
+    <div class="filter-field">
+      <label>Seção</label>
+      <select id="filter-section">
+        <option value="">Todos</option>
+        <option value="cowork">Coworking</option>
+        <option value="sala">Sala de Reunião</option>
+      </select>
+    </div>
+    <button class="filter-btn" onclick="loadBookings()">🔍 Buscar</button>
+    <button class="filter-btn secondary" onclick="clearFilters()">Limpar</button>
+  </div>
+
+  <div class="stats" id="stats">
+    <div class="stat"><div class="stat-val" id="s-total">—</div><div class="stat-lbl">Reservas encontradas</div></div>
+    <div class="stat"><div class="stat-val" id="s-fixed">—</div><div class="stat-lbl">Agenda fixa</div></div>
+    <div class="stat"><div class="stat-val" id="s-recur">—</div><div class="stat-lbl">Recorrentes</div></div>
+    <div class="stat"><div class="stat-val" id="s-people">—</div><div class="stat-lbl">Pessoas únicas</div></div>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-header">
+      <span class="table-title" id="table-title">Reservas</span>
+      <button class="delete-all-btn" onclick="askDeleteFiltered()">🗑 Excluir todas filtradas</button>
+    </div>
+    <div id="table-body"><div class="loading">Carregando...</div></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div id="modal-container"></div>
+
+<script>
+const ADMIN_PASSWORD = 'implanta2026';
+const API = '/api/bookings';
+
+// ── Auth ──
+function doLogin(){
+  const pwd = document.getElementById('pwd-input').value;
+  if(pwd === ADMIN_PASSWORD){
+    sessionStorage.setItem('admin_auth','1');
+    document.getElementById('login-wrap').style.display='none';
+    document.getElementById('admin-panel').classList.add('show');
+    initPanel();
+  } else {
+    document.getElementById('login-err').classList.add('show');
+    document.getElementById('pwd-input').value='';
+    document.getElementById('pwd-input').focus();
+  }
+}
+
+function doLogout(){
+  sessionStorage.removeItem('admin_auth');
+  location.reload();
+}
+
+// ── Init ──
+function initPanel(){
+  // Default: current week Mon to Sun
+  const today = new Date();
+  const mon = new Date(today);
+  mon.setDate(today.getDate() - (today.getDay()===0?6:today.getDay()-1));
+  const sun = new Date(mon); sun.setDate(mon.getDate()+6);
+  document.getElementById('filter-from').value = fmtISO(mon);
+  document.getElementById('filter-to').value   = fmtISO(sun);
+  loadBookings();
+}
+
+function fmtISO(d){ return d.toISOString().slice(0,10); }
+function fmtBR(s){ const[y,m,d]=s.split('-'); return`${d}/${m}/${y}`; }
+function spotSection(sid){ return sid.startsWith('c')?'cowork':'sala'; }
+function spotLabel(sid){ const n=sid.slice(1); return sid.startsWith('c')?`Posto ${n} (Coworking)`:`Lugar ${n} (Sala)`; }
+
+let allBookings = [];
+
+async function loadBookings(){
+  document.getElementById('table-body').innerHTML='<div class="loading">Buscando reservas...</div>';
+  try {
+    const from = document.getElementById('filter-from').value;
+    const to   = document.getElementById('filter-to').value;
+    const url  = from ? `${API}?from=${from}&to=${to}` : API;
+    const res  = await fetch(url);
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    allBookings = await res.json();
+    renderTable();
+  } catch(e){
+    document.getElementById('table-body').innerHTML=`<div class="empty">❌ Erro ao carregar reservas: ${e.message}<br><br><small>Verifique se a API está acessível em /api/bookings</small></div>`;
+  }
+}
+
+function renderTable(){
+  const nameFilter = document.getElementById('filter-name').value.trim().toLowerCase();
+  const secFilter  = document.getElementById('filter-section').value;
+
+  let filtered = allBookings.filter(b=>{
+    if(nameFilter && !b.name.toLowerCase().includes(nameFilter) && !(b.team||'').toLowerCase().includes(nameFilter)) return false;
+    if(secFilter && spotSection(b.spot_id) !== secFilter) return false;
+    return true;
+  });
+
+  // Sort by date, then spot
+  filtered.sort((a,b)=>a.day_key.localeCompare(b.day_key)||a.spot_id.localeCompare(b.spot_id));
+
+  // Stats
+  document.getElementById('s-total').textContent  = filtered.length;
+  document.getElementById('s-fixed').textContent  = filtered.filter(b=>b.note==='Agenda fixa'||b.fixed).length;
+  document.getElementById('s-recur').textContent  = filtered.filter(b=>b.recurrent).length;
+  document.getElementById('s-people').textContent = new Set(filtered.map(b=>b.name)).size;
+  document.getElementById('table-title').textContent = `${filtered.length} reserva${filtered.length!==1?'s':''} encontrada${filtered.length!==1?'s':''}`;
+
+  if(filtered.length===0){
+    document.getElementById('table-body').innerHTML='<div class="empty">Nenhuma reserva encontrada para os filtros selecionados.</div>';
+    return;
+  }
+
+  let html=`<table><thead><tr>
+    <th>Data</th><th>Posto</th><th>Nome</th><th>Time</th><th>Motivo</th><th>Tipo</th><th></th>
+  </tr></thead><tbody>`;
+
+  filtered.forEach(b=>{
+    const sec   = spotSection(b.spot_id);
+    const isFixed = b.note==='Agenda fixa'||b.fixed;
+    const isRecur = b.recurrent && !isFixed;
+    const typeLabel = isFixed?'Agenda fixa':isRecur?'Recorrente':'Normal';
+    const typeClass = isFixed?'fixed':isRecur?'recur':'normal';
+    html+=`<tr>
+      <td class="td-date">${fmtBR(b.day_key)}</td>
+      <td><span class="td-spot ${sec}">${spotLabel(b.spot_id)}</span></td>
+      <td class="td-name">${esc(b.name)}</td>
+      <td class="td-team">${esc(b.team||'—')}</td>
+      <td class="td-note" title="${esc(b.note||'')}">${esc(b.note||'—')}</td>
+      <td><span class="td-type ${typeClass}">${typeLabel}</span></td>
+      <td><button class="del-btn" onclick="askDelete(${b.id},'${esc(b.name)}','${b.day_key}','${esc(spotLabel(b.spot_id))}')" id="del-${b.id}">Excluir</button></td>
+    </tr>`;
+  });
+
+  html+='</tbody></table>';
+  document.getElementById('table-body').innerHTML=html;
+}
+
+function clearFilters(){
+  document.getElementById('filter-name').value='';
+  document.getElementById('filter-section').value='';
+  loadBookings();
+}
+
+// ── Delete single ──
+function askDelete(id, name, dayKey, spotLabel){
+  pendingDelete = {id, name, dayKey, spotLabel};
+  showModal(`
+    <h3>🗑 Excluir reserva</h3>
+    <p>Excluir a reserva de <strong>${esc(name)}</strong> em <strong>${esc(spotLabel)}</strong> no dia <strong>${fmtBR(dayKey)}</strong>?<br><br>Esta ação não pode ser desfeita.</p>
+    <div class="modal-btns">
+      <button onclick="closeModal()">Cancelar</button>
+      <button class="btn-del" onclick="confirmDelete()">Excluir</button>
+    </div>`);
+}
+
+let pendingDelete = null;
+let pendingDeleteFiltered = null;
+
+async function confirmDelete(){
+  if(!pendingDelete) return;
+  closeModal();
+  const btn = document.getElementById(`del-${pendingDelete.id}`);
+  if(btn){ btn.disabled=true; btn.textContent='...'; }
+  try {
+    const res = await fetch(`${API}/${pendingDelete.id}`, {method:'DELETE'});
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    allBookings = allBookings.filter(b=>b.id!==pendingDelete.id);
+    renderTable();
+    showToast('Reserva excluída com sucesso.','#97C459');
+  } catch(e){
+    showToast(`Erro ao excluir: ${e.message}`,'#F09595');
+    if(btn){ btn.disabled=false; btn.textContent='Excluir'; }
+  }
+  pendingDelete=null;
+}
+
+// ── Delete all filtered ──
+function askDeleteFiltered(){
+  const nameFilter = document.getElementById('filter-name').value.trim().toLowerCase();
+  const secFilter  = document.getElementById('filter-section').value;
+  const filtered = allBookings.filter(b=>{
+    if(nameFilter && !b.name.toLowerCase().includes(nameFilter) && !(b.team||'').toLowerCase().includes(nameFilter)) return false;
+    if(secFilter && spotSection(b.spot_id) !== secFilter) return false;
+    return true;
+  });
+  if(filtered.length===0){ showToast('Nenhuma reserva para excluir.','#F09595'); return; }
+  pendingDeleteFiltered = filtered;
+  showModal(`
+    <h3>🗑 Excluir reservas filtradas</h3>
+    <p>Isso vai excluir <strong>${filtered.length} reserva${filtered.length!==1?'s':''}</strong> do resultado atual. Esta ação não pode ser desfeita.</p>
+    <div class="modal-btns">
+      <button onclick="closeModal()">Cancelar</button>
+      <button class="btn-del" onclick="confirmDeleteFiltered()">Excluir todas</button>
+    </div>`);
+}
+
+async function confirmDeleteFiltered(){
+  if(!pendingDeleteFiltered) return;
+  closeModal();
+  const toDelete = [...pendingDeleteFiltered];
+  pendingDeleteFiltered = null;
+  document.getElementById('table-body').innerHTML='<div class="loading">Excluindo '+toDelete.length+' reservas...</div>';
+  let ok=0, fail=0;
+  for(const b of toDelete){
+    try{
+      const res = await fetch(`${API}/${b.id}`,{method:'DELETE'});
+      if(res.ok){ ok++; allBookings=allBookings.filter(x=>x.id!==b.id); }
+      else fail++;
+    } catch(e){ fail++; }
+  }
+  renderTable();
+  showToast(`${ok} excluída${ok!==1?'s':''}${fail>0?' · '+fail+' erro(s)':''}.`, ok>0?'#97C459':'#F09595');
+}
+
+// ── Helpers ──
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function showToast(msg,bc){
+  const t=document.getElementById('toast');
+  t.textContent=msg; if(bc)t.style.background=bc==='#97C459'?'#27500A':'#791F1F';
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function showModal(html){
+  document.getElementById('modal-container').innerHTML=`<div class="modal-backdrop" id="mbg"><div class="modal">${html}</div></div>`;
+  document.getElementById('mbg').addEventListener('click',e=>{ if(e.target.id==='mbg') closeModal(); });
+}
+function closeModal(){ document.getElementById('modal-container').innerHTML=''; }
+
+// ── Check session on load ──
+if(sessionStorage.getItem('admin_auth')==='1'){
+  document.getElementById('login-wrap').style.display='none';
+  document.getElementById('admin-panel').classList.add('show');
+  initPanel();
+}
+document.getElementById('pwd-input').focus();
+</script>
+</body>
+</html>
+<!-- 
+NOTA PARA O FÁBIO:
+A rota GET /api/bookings precisa aceitar os parâmetros ?from=YYYY-MM-DD&to=YYYY-MM-DD
+para o painel admin funcionar com filtro de período.
+
+Se a rota atual só aceita ?week=YYYY-MM-DD, substitua a query no bookings.js por:
+
+const { week, from, to } = req.query;
+let whereClause, params;
+
+if(from && to) {
+  whereClause = "WHERE day_key >= $1 AND day_key <= $2";
+  params = [from, to];
+} else if(week) {
+  // calcula seg e dom da semana
+  const mon = new Date(week);
+  const sun = new Date(mon); sun.setDate(mon.getDate()+6);
+  whereClause = "WHERE day_key >= $1 AND day_key <= $2";
+  params = [week, sun.toISOString().slice(0,10)];
+} else {
+  whereClause = "";
+  params = [];
+}
+
+const result = await client.query(
+  `SELECT * FROM bookings ${whereClause} ORDER BY day_key, spot_id`,
+  params
+);
+-->
