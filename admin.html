@@ -236,7 +236,13 @@ async function loadBookings(){
     const url  = from ? `${API}?from=${from}&to=${to}` : API;
     const res  = await fetch(url);
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
-    allBookings = await res.json();
+    const data = await res.json();
+    // Handle any response format: array, {rows:[]}, {bookings:[]}, {data:[]}
+    allBookings = Array.isArray(data) ? data
+                : Array.isArray(data.rows) ? data.rows
+                : Array.isArray(data.bookings) ? data.bookings
+                : Array.isArray(data.data) ? data.data
+                : [];
     renderTable();
   } catch(e){
     document.getElementById('table-body').innerHTML=`<div class="empty">❌ Erro ao carregar reservas: ${e.message}<br><br><small>Verifique se a API está acessível em /api/bookings</small></div>`;
