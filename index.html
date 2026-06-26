@@ -415,7 +415,38 @@ function askBook(k,label,dk){
     <label class="modal-check"><input type="checkbox" id="book-recur"> Repetir toda semana neste mesmo lugar e dia</label>
     <div class="modal-btns"><button onclick="closeModal()">Cancelar</button><button class="btn-confirm" onclick="confirmBook()">Confirmar reserva</button></div>`);
 }
-function confirmBook(){if(!pendingAction||pendingAction.type!=='book')return;const note=(document.getElementById('book-note').value||'').trim();const recur=document.getElementById('book-recur').checked;const entry={name:pendingAction.me,team:pendingAction.team||'',note};bookings[pendingAction.k]=entry;if(recur){const d=new Date(pendingAction.dk),dow=d.getDay()===0?6:d.getDay()-1,sid=pendingAction.k.split('__')[1];bookings[`rec__${dow}__${sid}`]={...entry,recurrent:true};}closeModal();showToast('Reserva confirmada!','#97C459');refresh();}
+
+// ── API helpers ──
+async function apiPost(spot_id, day_key, name, team, note, recurrent, rec_dow){
+  try {
+    const res = await fetch('/api/bookings', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({spot_id, day_key, name, team, note, recurrent: recurrent||false, rec_dow: rec_dow||null})
+    });
+    if(!res.ok){ const e=await res.json().catch(()=>{}); throw new Error(e?.error||res.status); }
+    return true;
+  } catch(e){ console.error('Erro ao salvar reserva:',e); showToast('Erro ao salvar: '+e.message,'#F09595'); return false; }
+}
+async function apiDelete(id){
+  try {
+    const res = await fetch('/api/bookings/'+id, {method:'DELETE'});
+    return res.ok;
+  } catch(e){ return false; }
+}
+async function confirmBook(){
+  if(!pendingAction||pendingAction.type!=='book')return;
+  const note=(document.getElementById('book-note').value||'').trim();
+  const recur=document.getElementById('book-recur').checked;
+  const sid=pendingAction.k.split('__')[1];
+  const ok=await apiPost(sid,pendingAction.dk,pendingAction.me,pendingAction.team||'',note,false,null);
+  if(!ok)return;
+  if(recur){
+    const d=new Date(pendingAction.dk),dow=d.getDay()===0?6:d.getDay()-1;
+    await apiPost(sid,'recurrent',pendingAction.me,pendingAction.team||'',note,true,dow);
+  }
+  closeModal();showToast('Reserva confirmada!','#97C459');refresh();
+}
 
 function askCancel(k,label,dk,isRecur){
   pendingAction={type:'cancel',k,dk,isRecur};
@@ -428,7 +459,17 @@ function askCancel(k,label,dk,isRecur){
   else{showModal(`<h3>&#128465; Cancelar reserva</h3><p>Cancelar reserva em <strong>${esc(label)}</strong> no dia <strong>${fmtFull(dk)}</strong>?</p>
     <div class="modal-btns"><button onclick="closeModal()">Manter</button><button class="btn-cancel" onclick="confirmCancel('only')">Cancelar reserva</button></div>`);}
 }
-function confirmCancel(scope){if(!pendingAction||pendingAction.type!=='cancel')return;delete bookings[pendingAction.k];if(pendingAction.isRecur&&scope==='all'){const sid=pendingAction.k.split('__')[1],d=new Date(pendingAction.dk),dow=d.getDay()===0?6:d.getDay()-1;delete bookings[`rec__${dow}__${sid}`];}closeModal();showToast(scope==='all'?'Recorrência cancelada.':'Reserva cancelada.','#F09595');refresh();}
+async function confirmCancel(scope){
+  if(!pendingAction||pendingAction.type!=='cancel')return;
+  const b=bookings[pendingAction.k];
+  if(b&&b.id) await apiDelete(b.id);
+  if(pendingAction.isRecur&&scope==='all'){
+    const sid=pendingAction.k.split('__')[1],d=new Date(pendingAction.dk),dow=d.getDay()===0?6:d.getDay()-1;
+    const rb=bookings['rec__'+dow+'__'+sid];
+    if(rb&&rb.id) await apiDelete(rb.id);
+  }
+  closeModal();showToast(scope==='all'?'Recorrência cancelada.':'Reserva cancelada.','#F09595');refresh();
+}
 
 function askBookSection(dk,sec){
   const me=getName(),team=getTeam();
@@ -451,8 +492,24 @@ function askBookAllModal(sec){
     <div class="modal-field"><label>Motivo / evento</label><input type="text" id="bookall-note2" placeholder="ex: Sprint review..."></div>
     <div class="modal-btns"><button onclick="closeModal()">Cancelar</button><button class="btn-confirm" onclick="confirmBookAllPick()">Confirmar</button></div>`);
 }
-function confirmBookAllPick(){const me=getName(),team=getTeam(),dk=document.getElementById('bookall-day').value,note=(document.getElementById('bookall-note2').value||'').trim(),sec=pendingAction.sec||'all',free=filterSection(R_SPOTS,sec).filter(s=>!getEffBooking(dk,s.id));free.forEach(s=>{bookings[bKey(dk,s.id)]={name:me,team:team||'',note};});closeModal();showToast(`${free.length} lugar${free.length!==1?'es':''} reservado${free.length!==1?'s':''}!`,'#97C459');refresh();}
-function confirmBookAll(){if(!pendingAction||pendingAction.type!=='bookall')return;const note=(document.getElementById('bookall-note').value||'').trim();pendingAction.free.forEach(s=>{bookings[bKey(pendingAction.dk,s.id)]={name:pendingAction.me,team:pendingAction.team||'',note};});closeModal();showToast(`${pendingAction.free.length} lugares reservados!`,'#97C459');refresh();}
+async function confirmBookAllPick(){
+  const me=getName(),team=getTeam(),dk=document.getElementById('bookall-day').value;
+  const note=(document.getElementById('bookall-note2').value||'').trim();
+  const sec=pendingAction.sec||'all';
+  const free=filterSection(R_SPOTS,sec).filter(s=>!getEffBooking(dk,s.id));
+  closeModal();
+  let ok=0;
+  for(const s of free){ if(await apiPost(s.id,dk,me,team||'',note,false,null)) ok++; }
+  showToast(`${ok} lugar${ok!==1?'es':''} reservado${ok!==1?'s':''}!`,'#97C459');refresh();
+}
+async function confirmBookAll(){
+  if(!pendingAction||pendingAction.type!=='bookall')return;
+  const note=(document.getElementById('bookall-note').value||'').trim();
+  closeModal();
+  let ok=0;
+  for(const s of pendingAction.free){ if(await apiPost(s.id,pendingAction.dk,pendingAction.me,pendingAction.team||'',note,false,null)) ok++; }
+  showToast(`${ok} lugares reservados!`,'#97C459');refresh();
+}
 
 function showMyReservations(){
   const me=getName();if(!me){showToast('Informe seu nome para ver suas reservas','#F09595');return;}
