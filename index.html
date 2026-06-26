@@ -29,9 +29,6 @@
     }
     body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg-tertiary);color:var(--text);min-height:100vh}
     .page{max-width:1020px;margin:0 auto;padding:2rem 1.25rem 4rem}
-    .loading-bar{position:fixed;top:0;left:0;height:3px;background:#378ADD;width:0%;transition:width .3s;z-index:9999}
-    .loading-bar.active{width:70%}
-    .loading-bar.done{width:100%;transition:width .1s}
 
     /* ── Topbar ── */
     .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:12px}
@@ -70,13 +67,13 @@
     .btn-blue{background:var(--blue-bg);color:var(--blue-text);border-color:var(--blue-border)}
     .btn-amber{background:var(--amber-bg);color:var(--amber-text);border-color:var(--amber-border)}
 
-    /* ── Stats ── */
+    /* ── Stats (reservas) ── */
     .r-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.25rem}
     .r-stat{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem}
     .r-stat-val{font-size:24px;font-weight:500;line-height:1;margin-bottom:4px}
     .r-stat-lbl{font-size:12px;color:var(--text-secondary)}
 
-    /* ── Calendar ── */
+    /* ── Calendar (reservas) ── */
     .cal-wrap{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1.25rem}
     .cal-grid{display:grid;grid-template-columns:88px repeat(5,1fr)}
     .cal-grid>*{border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border)}
@@ -107,7 +104,7 @@
     .res-item-cancel:hover{opacity:.75}
     .res-empty{font-size:13px;color:var(--text-tertiary);padding:.5rem 0}
 
-    /* ── Legend ── */
+    /* ── Legend (reservas) ── */
     .r-legend{display:flex;gap:20px;flex-wrap:wrap;padding:0 4px;margin-bottom:1.5rem}
     .r-legend-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text-secondary)}
 
@@ -130,9 +127,10 @@
     .modal-btns button:hover{opacity:.8}
     .modal-btns .btn-confirm{background:var(--green-bg);color:var(--green-text);border-color:var(--green-border)}
     .modal-btns .btn-cancel{background:var(--red-bg);color:var(--red-text);border-color:var(--red-border)}
+    .warn-box{background:var(--red-bg);border:0.5px solid var(--red-border);border-radius:var(--radius-md);padding:8px 12px;font-size:12px;color:var(--red-text);margin-bottom:1rem;display:none;line-height:1.6}
+    .warn-box.show{display:block}
 
-    /* ── Agenda fixa ── */
-    .ag-fixed-note{background:var(--amber-bg);border:0.5px solid var(--amber-border);border-radius:var(--radius-lg);padding:10px 14px;font-size:13px;color:var(--amber-text);margin-bottom:1.25rem}
+    /* ── Agenda fixa styles ── */
     .ag-controls{display:flex;align-items:center;gap:10px;margin-bottom:1.25rem;flex-wrap:wrap;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem}
     .ag-controls label{font-size:13px;color:var(--text-secondary)}
     .ag-controls select{font-size:13px;padding:6px 10px;border-radius:var(--radius-md);border:0.5px solid var(--border-md);background:var(--bg);color:var(--text)}
@@ -150,64 +148,75 @@
     .ag-rl{background:var(--bg-secondary);padding:8px 10px;font-size:12px;font-weight:500;color:var(--text);display:flex;flex-direction:column;gap:2px}
     .ag-rl .dates{font-size:10px;color:var(--text-tertiary);font-weight:400}
     .ag-cell{background:var(--bg);padding:6px 8px;min-height:90px}
-    .ag-cell.locked{background:#FAEEDA22}
-    .ag-cell.empty{background:var(--bg)}
-    .ag-date-lbl{font-size:10px;color:var(--text-tertiary);margin-bottom:4px}
-    .ag-cap-txt{display:flex;justify-content:space-between;font-size:10px;color:var(--text-secondary);margin-bottom:2px}
-    .ag-cap-bar{height:3px;background:var(--bg-tertiary);border-radius:2px;margin-bottom:6px}
-    .ag-cap-fill{height:100%;border-radius:2px;transition:width .3s}
-    .ag-team-block{margin-bottom:6px}
-    .ag-team-header{font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;margin-bottom:2px;display:flex;align-items:center}
-    .ag-team-people{padding-left:4px}
-    .ag-person{font-size:10px;color:var(--text-secondary);display:flex;align-items:center;gap:4px;padding:1px 0}
-    .ag-person .bullet{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-    .ag-locked-label{font-size:11px;color:#633806;font-style:italic;padding:4px 0}
-    .ag-coverage{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.25rem}
-    .ag-cov-title{font-size:13px;font-weight:500;margin-bottom:.75rem;color:var(--green-text)}
-    .ag-cov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}
-    .ag-cov-person{display:flex;align-items:center;justify-content:space-between;padding:5px 8px;border-radius:6px;font-size:12px;background:var(--bg-secondary)}
-    .ag-badge{font-size:10px;padding:2px 6px;border-radius:4px}
-    .ag-badge.ok{background:var(--green-bg);color:var(--green-text)}
+    .ag-cell.locked{background:#FFFBF0}
+    .ag-cell.empty{background:var(--bg-secondary)}
+    .ag-date-lbl{font-size:9px;color:var(--text-tertiary);margin-bottom:4px}
+    .ag-cap-bar{height:3px;border-radius:2px;margin-bottom:5px;background:var(--bg-tertiary);overflow:hidden}
+    .ag-cap-fill{height:100%;border-radius:2px}
+    .ag-cap-txt{font-size:9px;color:var(--text-tertiary);margin-bottom:4px;display:flex;justify-content:space-between}
+    .ag-locked-label{font-size:11px;font-weight:500;color:#854F0B;display:flex;align-items:center;gap:4px;padding:6px 0}
+    .ag-team-block{margin-bottom:4px;border-radius:6px;overflow:hidden}
+    .ag-team-header{display:flex;align-items:center;justify-content:space-between;padding:3px 8px;font-size:11px;font-weight:500}
+    .ag-team-people{padding:3px 8px 5px;background:rgba(0,0,0,.03)}
+    .ag-person{font-size:10px;padding:1px 0;display:flex;align-items:center;gap:5px;color:var(--text-secondary)}
+    .ag-person .bullet{width:4px;height:4px;border-radius:50%;flex-shrink:0}
+    .ag-coverage{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;margin-bottom:1.25rem}
+    .ag-cov-title{font-size:12px;font-weight:500;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.75rem}
+    .ag-cov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:6px}
+    .ag-cov-person{display:flex;align-items:center;justify-content:space-between;padding:5px 8px;border-radius:var(--radius-md);font-size:12px;background:var(--bg-secondary)}
+    .ag-cov-person.ok{background:#EAF3DE;color:#27500A}
+    .ag-badge{font-size:10px;padding:2px 6px;border-radius:10px;font-weight:500}
+    .ag-badge.ok{background:#C0DD97;color:#27500A}
+    .ag-fixed-note{background:var(--blue-bg);border:0.5px solid var(--blue-border);border-radius:var(--radius-md);padding:8px 12px;font-size:12px;color:var(--blue-text);margin-bottom:1.25rem}
+
+    @media(max-width:640px){
+      .cal-grid{grid-template-columns:68px repeat(5,1fr)}
+      .r-cell-row-label{font-size:10px;padding-left:6px}
+      .field input{width:150px}
+      .ag-grid{grid-template-columns:90px repeat(3,1fr)}
+    }
   </style>
 </head>
 <body>
-<div class="loading-bar" id="loading-bar"></div>
 <div class="page">
 
+  <!-- topbar -->
   <div class="topbar">
     <div class="logo">
       <div class="logo-mark">🏢</div>
       <div>
         <div class="logo-text">Implanta IT Solutions</div>
-        <div class="logo-sub">Reserva de espaços — Goiânia</div>
+        <div class="logo-sub">Escritório Goiânia</div>
       </div>
     </div>
-    <div id="res-nav" class="nav-group">
-      <button onclick="changeWeek(-1)">&#8249;</button>
+    <div class="nav-group" id="res-nav">
+      <button onclick="changeWeek(-1)" aria-label="Semana anterior">&#8249;</button>
       <span class="week-label" id="week-label"></span>
-      <button onclick="changeWeek(1)">&#8250;</button>
+      <button onclick="changeWeek(1)" aria-label="Próxima semana">&#8250;</button>
       <button onclick="goToday()">Hoje</button>
     </div>
   </div>
 
+  <!-- tabs -->
   <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('reservas',this)">🪑 Reservar posto</button>
     <button class="tab-btn" onclick="switchTab('agenda',this)">📅 Agenda fixa</button>
   </div>
 
-  <!-- TAB RESERVAS -->
+  <!-- ══════ TAB RESERVAS ══════ -->
   <div class="tab-panel active" id="tab-reservas">
+
     <div class="card">
       <div class="card-title">Suas informações</div>
       <div class="fields">
         <div class="field"><label for="username">Nome</label><input type="text" id="username" placeholder="ex: Cecília" autocomplete="off"></div>
-        <div class="field"><label for="userteam">Time</label><input type="text" id="userteam" placeholder="ex: Time Jade..." autocomplete="off"></div>
+        <div class="field"><label for="userteam">Time</label><input type="text" id="userteam" placeholder="ex: Time Azul, Time Vermelho..." autocomplete="off"></div>
       </div>
       <div class="action-bar">
-        <button class="btn btn-blue" onclick="showMyReservations()">☰ Minhas reservas</button>
-        <button class="btn btn-amber" onclick="askBookAllModal('cowork')">🖥 Reservar coworking</button>
-        <button class="btn btn-amber" onclick="askBookAllModal('sala')">📋 Reservar sala de reunião</button>
-        <button class="btn" onclick="askBookAllModal('all')">📅 Reservar espaço inteiro</button>
+        <button class="btn btn-blue" onclick="showMyReservations()">&#9776; Minhas reservas</button>
+        <button class="btn btn-amber" onclick="askBookAllModal('cowork')">&#128187; Reservar coworking</button>
+        <button class="btn btn-amber" onclick="askBookAllModal('sala')">&#128196; Reservar sala de reunião</button>
+        <button class="btn" onclick="askBookAllModal('all')">&#128197; Reservar espaço inteiro</button>
         <span class="hint" id="limit-hint"></span>
       </div>
     </div>
@@ -227,13 +236,16 @@
       <div class="r-legend-item"><svg width="20" height="20" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="9" rx="2" fill="#F7C1C1" stroke="#E24B4A" stroke-width="1.2"/><rect x="3" y="11" width="18" height="4" rx="2" fill="#F7C1C1" stroke="#E24B4A" stroke-width="1.2"/><rect x="5.5" y="15" width="3" height="6" rx="1" fill="#F09595"/><rect x="15.5" y="15" width="3" height="6" rx="1" fill="#F09595"/></svg>Ocupado</div>
       <div class="r-legend-item"><svg width="20" height="20" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="9" rx="2" fill="#FAC775" stroke="#BA7517" stroke-width="1.2"/><rect x="3" y="11" width="18" height="4" rx="2" fill="#FAC775" stroke="#BA7517" stroke-width="1.2"/><rect x="5.5" y="15" width="3" height="6" rx="1" fill="#EF9F27"/><rect x="15.5" y="15" width="3" height="6" rx="1" fill="#EF9F27"/></svg>Recorrente</div>
     </div>
-  </div>
 
-  <!-- TAB AGENDA -->
+  </div><!-- /tab-reservas -->
+
+  <!-- ══════ TAB AGENDA ══════ -->
   <div class="tab-panel" id="tab-agenda">
+
     <div class="ag-fixed-note">
       📌 <strong>Grade fixa mensal:</strong> cada time tem seu dia garantido todo mês. Qui e Sex reservados para treinamentos e reuniões de gestão com Rômulo.
     </div>
+
     <div class="ag-controls">
       <label>Mês:</label>
       <select id="ag-sel-month" onchange="agBuild()">
@@ -245,6 +257,7 @@
         <option value="5">Dezembro 2026</option>
       </select>
     </div>
+
     <div class="ag-legend">
       <div class="ag-legend-item"><div class="ag-dot" style="background:#B5D4F4"></div>Operações</div>
       <div class="ag-legend-item"><div class="ag-dot" style="background:#C0DD97"></div>Produto / Dados</div>
@@ -252,12 +265,18 @@
       <div class="ag-legend-item"><div class="ag-dot" style="background:#FAC775"></div>Infra / RH / Adm</div>
       <div class="ag-legend-item"><div class="ag-dot" style="background:#FAEEDA;border:0.5px solid #EF9F27"></div>Qui / Sex — travado</div>
     </div>
+
     <div class="ag-stats" id="ag-stats"></div>
     <div class="ag-grid-wrap"><div id="ag-calendar"></div></div>
     <div class="ag-coverage" id="ag-coverage"></div>
-  </div>
 
-</div>
+  </div><!-- /tab-agenda -->
+
+</div><!-- /page -->
+
+<div id="toast"></div>
+<div id="modal-container"></div>
+
 <div id="toast"></div>
 <div id="modal-container"></div>
 
@@ -265,8 +284,8 @@
 // ══════════════════════════════════════════
 // LOADING BAR
 // ══════════════════════════════════════════
-function loadingStart(){const b=document.getElementById('loading-bar');b.className='loading-bar active';}
-function loadingDone(){const b=document.getElementById('loading-bar');b.className='loading-bar done';setTimeout(()=>{b.className='loading-bar';b.style.width='0%';},400);}
+function loadingStart(){const b=document.getElementById('loading-bar');if(b){b.className='loading-bar active';}}
+function loadingDone(){const b=document.getElementById('loading-bar');if(b){b.className='loading-bar done';setTimeout(()=>{b.className='loading-bar';b.style.width='0%';},400);}}
 
 // ══════════════════════════════════════════
 // TABS
@@ -293,13 +312,26 @@ async function loadBookings(){
   try{
     const monday=dKey(getMonday(weekOffset));
     const data=await apiFetch('/api/bookings?week='+monday);
+    // Começa com as reservas fixas como base
     bookings={};
+    Object.entries(FIXED_BOOKINGS).forEach(([k,v])=>{bookings[k]=v;});
+    // Sobrescreve/adiciona reservas do banco
     (data.bookings||[]).forEach(b=>{
-      if(b.recurrent){bookings['rec__'+b.rec_dow+'__'+b.spot_id]={id:b.id,name:b.name,team:b.team,note:b.note,recurrent:true};}
-      else{bookings[b.day_key+'__'+b.spot_id]={id:b.id,name:b.name,team:b.team,note:b.note,recurrent:false};}
+      if(b.recurrent){
+        bookings['rec__'+b.rec_dow+'__'+b.spot_id]={id:b.id,name:b.name,team:b.team,note:b.note,recurrent:true};
+      } else {
+        bookings[b.day_key+'__'+b.spot_id]={id:b.id,name:b.name,team:b.team,note:b.note,recurrent:false};
+      }
     });
     render();
-  }catch(e){showToast('Erro ao carregar reservas.','#F09595');console.error(e);}
+  }catch(e){
+    // Fallback: usa só as reservas fixas se API falhar
+    bookings={};
+    Object.entries(FIXED_BOOKINGS).forEach(([k,v])=>{bookings[k]=v;});
+    render();
+    showToast('Offline — mostrando agenda fixa','#EF9F27');
+    console.error(e);
+  }
   loadingDone();
 }
 async function apiCreate(payload){return apiFetch('/api/bookings',{method:'POST',body:JSON.stringify(payload)});}
@@ -335,8 +367,9 @@ function getEffBooking(dk,sid){
   const rk='rec__'+dow+'__'+sid;if(bookings[rk])return{...bookings[rk],recurrent:true};
   return null;
 }
+function isFixed(dk,sid){const b=bookings[bKey(dk,sid)];return b&&b.fixed===true;}
 function chairSVG(state){
-  const C={free:{f:'#D3D1C7',s:'#888780',l:'#B4B2A9'},mine:{f:'#C0DD97',s:'#639922',l:'#97C459'},taken:{f:'#F7C1C1',s:'#E24B4A',l:'#F09595'},recur:{f:'#FAC775',s:'#BA7517',l:'#EF9F27'},past:{f:'#F1EFE8',s:'#D3D1C7',l:'#D3D1C7'}};
+  const C={free:{f:'#D3D1C7',s:'#888780',l:'#B4B2A9'},mine:{f:'#C0DD97',s:'#639922',l:'#97C459'},taken:{f:'#F7C1C1',s:'#E24B4A',l:'#F09595'},recur:{f:'#FAC775',s:'#BA7517',l:'#EF9F27'},past:{f:'#F1EFE8',s:'#D3D1C7',l:'#D3D1C7'},fixed:{f:'#F7C1C1',s:'#E24B4A',l:'#F09595'}};
   const c=C[state]||C.free;
   return '<svg width="34" height="34" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="9" rx="2" fill="'+c.f+'" stroke="'+c.s+'" stroke-width="1.2"/><rect x="3" y="11" width="18" height="4" rx="2" fill="'+c.f+'" stroke="'+c.s+'" stroke-width="1.2"/><rect x="5.5" y="15" width="3" height="6" rx="1" fill="'+c.l+'"/><rect x="15.5" y="15" width="3" height="6" rx="1" fill="'+c.l+'"/></svg>';
 }
@@ -379,9 +412,15 @@ function render(){
     dates.forEach(d=>{
       const dk=dKey(d),b=getEffBooking(dk,spot.id),past=isPast(d);
       let state,nameLabel,teamLabel='',onclick,disabled;
-      if(b){const ismine=me&&b.name===me;const isrecur=b.recurrent&&ismine;state=isrecur?'recur':ismine?'mine':'taken';nameLabel=b.name;teamLabel=b.team||'';
-        onclick=ismine?'askCancel(\''+bKey(dk,spot.id)+'\',\''+esc(spot.label)+'\',\''+dk+'\','+(b.recurrent?'true':'false')+','+(b.id||'null')+')':null;disabled=!ismine;}
-      else if(past){state='past';nameLabel='';disabled=true;onclick=null;}
+      if(b){
+        const fixed=b.fixed===true;
+        const ismine=!fixed&&me&&b.name===me;
+        const isrecur=b.recurrent&&ismine;
+        state=isrecur?'recur':ismine?'mine':'taken';
+        nameLabel=b.name;teamLabel=b.team||'';
+        onclick=ismine?'askCancel(\''+bKey(dk,spot.id)+'\',\''+esc(spot.label)+'\',\''+dk+'\','+(b.recurrent?'true':'false')+','+(b.id||'null')+')':null;
+        disabled=!ismine;
+      } else if(past){state='past';nameLabel='';disabled=true;onclick=null;}
       else{state='free';nameLabel='livre';disabled=false;onclick='askBook(\''+bKey(dk,spot.id)+'\',\''+esc(spot.label)+'\',\''+dk+'\',\''+spot.id+'\')';}
       const tc=state==='mine'||state==='recur'?'var(--green-text)':state==='taken'?'var(--red-text)':'var(--text-tertiary)';
       const fi=state==='free'?'font-style:italic':'';
@@ -513,10 +552,10 @@ async function confirmBookAll(){
 function showMyReservations(){
   const me=getName();if(!me){showToast('Informe seu nome para ver suas reservas','#F09595');return;}
   const today=new Date();today.setHours(0,0,0,0);const future=[];
-  for(let w=0;w<8;w++){for(let di=0;di<5;di++){const d=new Date(getMonday(w-weekOffset));d.setDate(d.getDate()+di);if(d<today)continue;const dk=dKey(d);R_SPOTS.forEach(s=>{const b=getEffBooking(dk,s.id);if(b&&b.name===me)future.push({dk,spot:s,b,d:new Date(d)});});}}
+  for(let w=0;w<8;w++){for(let di=0;di<5;di++){const d=new Date(getMonday(w-weekOffset));d.setDate(d.getDate()+di);if(d<today)continue;const dk=dKey(d);R_SPOTS.forEach(s=>{const b=getEffBooking(dk,s.id);if(b&&b.name===me&&!b.fixed)future.push({dk,spot:s,b,d:new Date(d)});});}}
   const seen=new Set();const deduped=future.filter(r=>{const k=r.b.recurrent?'rec__'+r.d.getDay()+'__'+r.spot.id:bKey(r.dk,r.spot.id);if(seen.has(k))return false;seen.add(k);return true;});
   let list='';
-  if(deduped.length===0){list='<p class="res-empty">Nenhuma reserva futura.</p>';}
+  if(deduped.length===0){list='<p class="res-empty">Nenhuma reserva pessoal futura.</p>';}
   else{list=deduped.slice(0,20).map(r=>{
     const label=r.b.recurrent?'↻ toda '+['segunda','terça','quarta','quinta','sexta'][r.d.getDay()===0?6:r.d.getDay()-1]:fmtFull(r.dk);
     const ck=bKey(r.dk,r.spot.id);
@@ -529,16 +568,23 @@ function showMyReservations(){
 function changeWeek(d){weekOffset+=d;loadBookings();}
 function goToday(){weekOffset=0;loadBookings();}
 
-// ══════════════════════════════════════════
+// ════════════════════════════════════════════
 // AGENDA FIXA
-// ══════════════════════════════════════════
-const AG_FIXED_GRID=[
-  {week:0,day:0,teams:['titanio']},{week:0,day:1,teams:['magenta']},{week:0,day:2,teams:['laranja','violeta']},
-  {week:1,day:0,teams:['azul']},{week:1,day:1,teams:['prata','amarelo']},{week:1,day:2,teams:['vermelho','safira']},
-  {week:2,day:0,teams:['turquesa']},{week:2,day:1,teams:['salmao']},{week:2,day:2,teams:['sepia']},
-  {week:3,day:0,teams:['jade','grena']},{week:3,day:1,teams:['rubi']},
+// ════════════════════════════════════════════
+const AG_FIXED_GRID = [
+  {week:0,day:0,teams:['titanio']},
+  {week:0,day:1,teams:['magenta']},
+  {week:0,day:2,teams:['laranja','violeta']},
+  {week:1,day:0,teams:['azul']},
+  {week:1,day:1,teams:['prata','amarelo']},
+  {week:1,day:2,teams:['vermelho','safira']},
+  {week:2,day:0,teams:['turquesa']},
+  {week:2,day:1,teams:['salmao']},
+  {week:2,day:2,teams:['sepia']},
+  {week:3,day:0,teams:['jade','grena']},
+  {week:3,day:1,teams:['rubi']},
 ];
-const AG_TEAMS={
+const AG_TEAMS = {
   titanio: {label:'Time Titânio', color:'#C0DD97',text:'#27500A',border:'#97C459', people:['João Pedro Morgado','Lucas Guimarães','Lorena Morais','Milton Divino']},
   magenta: {label:'Time Magenta', color:'#B5D4F4',text:'#0C447C',border:'#85B7EB', people:['Guilherme Soares','Isadora Campos','João Luiz Castelo','Paulo Otávio']},
   laranja: {label:'Time Laranja', color:'#B5D4F4',text:'#0C447C',border:'#85B7EB', people:['Raphael Cardoso','Ewersson Pimentel']},
@@ -555,9 +601,9 @@ const AG_TEAMS={
   grena:   {label:'Time Grená',   color:'#FAC775',text:'#633806',border:'#EF9F27', people:['Vitória Mugayar']},
   rubi:    {label:'Time Rubi',    color:'#FAC775',text:'#633806',border:'#EF9F27', people:['Marco Túlio','Daniella Dias','Isabelly Silva']},
 };
-const AG_DAYS=['Segunda','Terça','Quarta'];
-const AG_MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-const AG_CAP=12;
+const AG_DAYS  = ['Segunda','Terça','Quarta'];
+const AG_MONTHS= ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const AG_CAP   = 12;
 
 function agP2(n){return String(n).padStart(2,'0');}
 function agGetWeeks(mo){
@@ -568,11 +614,11 @@ function agGetWeeks(mo){
     if(d.getMonth()!==base.getMonth())break;
     const mon=new Date(d),fri=new Date(d);fri.setDate(fri.getDate()+4);
     const end=fri.getMonth()!==base.getMonth()?new Date(base.getFullYear(),base.getMonth()+1,0):fri;
-    const dayDates=AG_DAYS.map((_,i)=>{const dd=new Date(mon);dd.setDate(mon.getDate()+i);return agP2(dd.getDate())+'/'+agP2(dd.getMonth()+1);});
-    weeks.push({label:'Semana '+(w+1),dates:agP2(mon.getDate())+'/'+agP2(mon.getMonth()+1)+' a '+agP2(end.getDate())+'/'+agP2(end.getMonth()+1),dayDates});
+    const dayDates=AG_DAYS.map((_,i)=>{const dd=new Date(mon);dd.setDate(mon.getDate()+i);return`${agP2(dd.getDate())}/${agP2(dd.getMonth()+1)}`;});
+    weeks.push({label:`Semana ${w+1}`,dates:`${agP2(mon.getDate())}/${agP2(mon.getMonth()+1)} a ${agP2(end.getDate())}/${agP2(end.getMonth()+1)}`,dayDates});
     d.setDate(d.getDate()+7);
   }
-  while(weeks.length<4)weeks.push({label:'Semana '+(weeks.length+1),dates:'—',dayDates:['—','—','—']});
+  while(weeks.length<4)weeks.push({label:`Semana ${weeks.length+1}`,dates:'—',dayDates:['—','—','—']});
   return weeks;
 }
 function agBuildSched(){
@@ -581,57 +627,71 @@ function agBuildSched(){
   return sched;
 }
 function agCapColor(c){const p=c/AG_CAP;return p>1?'#E24B4A':p>0.75?'#EF9F27':'#97C459';}
+
 function agBuild(){
   const mo=parseInt(document.getElementById('ag-sel-month').value);
   const weeks=agGetWeeks(mo),sched=agBuildSched();
-  agRenderGrid(weeks,sched,AG_MONTHS[6+mo]);agRenderStats(sched);agRenderCoverage(sched);
+  agRenderGrid(weeks,sched,AG_MONTHS[6+mo]);
+  agRenderStats(sched);
+  agRenderCoverage(sched);
 }
+
 function agRenderGrid(weeks,sched,monthName){
-  let h='<div style="padding:10px 14px;background:var(--bg-secondary);border-bottom:1px solid var(--border);font-size:13px;font-weight:500;color:var(--text-secondary)">'+monthName+' 2026 · máx. '+AG_CAP+' pessoas/dia · Qui e Sex travados</div>';
-  h+='<div class="ag-grid"><div class="ag-ch"></div>';
-  AG_DAYS.forEach(d=>{h+='<div class="ag-ch">'+d+'</div>';});
+  let h=`<div style="padding:10px 14px;background:var(--bg-secondary);border-bottom:1px solid var(--border);font-size:13px;font-weight:500;color:var(--text-secondary)">${monthName} 2026 · máx. ${AG_CAP} pessoas/dia · Qui e Sex travados</div>`;
+  h+='<div class="ag-grid">';
+  h+='<div class="ag-ch"></div>';
+  AG_DAYS.forEach(d=>{h+=`<div class="ag-ch">${d}</div>`;});
   weeks.forEach((wk,wi)=>{
-    h+='<div class="ag-rl"><span>'+wk.label+'</span><span class="dates">'+wk.dates+'</span></div>';
+    h+=`<div class="ag-rl"><span>${wk.label}</span><span class="dates">${wk.dates}</span></div>`;
     AG_DAYS.forEach((_,di)=>{
       const slot=sched[wi]?.[di],isEmpty=!slot||slot.count===0;
-      h+='<div class="ag-cell'+(isEmpty?' empty':'')+'"><div class="ag-date-lbl">'+wk.dayDates[di]+'</div>';
+      h+=`<div class="ag-cell${isEmpty?' empty':''}">`;
+      h+=`<div class="ag-date-lbl">${wk.dayDates[di]}</div>`;
       if(!isEmpty){
         const pct=Math.min(slot.count/AG_CAP*100,100);
-        h+='<div class="ag-cap-txt"><span>'+slot.count+' pessoa'+(slot.count!==1?'s':'')+'</span><span style="color:'+agCapColor(slot.count)+'">'+slot.count+'/'+AG_CAP+'</span></div>';
-        h+='<div class="ag-cap-bar"><div class="ag-cap-fill" style="width:'+pct+'%;background:'+agCapColor(slot.count)+'"></div></div>';
+        h+=`<div class="ag-cap-txt"><span>${slot.count} pessoa${slot.count!==1?'s':''}</span><span style="color:${agCapColor(slot.count)}">${slot.count}/${AG_CAP}</span></div>`;
+        h+=`<div class="ag-cap-bar"><div class="ag-cap-fill" style="width:${pct}%;background:${agCapColor(slot.count)}"></div></div>`;
         slot.teams.forEach(t=>{
-          h+='<div class="ag-team-block"><div class="ag-team-header" style="background:'+t.color+';color:'+t.text+'">'+t.label+'<span style="font-size:9px;opacity:.75;margin-left:4px">'+t.people.length+'p</span></div><div class="ag-team-people">';
-          t.people.forEach(p=>{h+='<div class="ag-person"><span class="bullet" style="background:'+t.border+'"></span>'+p+'</div>';});
-          h+='</div></div>';
+          h+=`<div class="ag-team-block"><div class="ag-team-header" style="background:${t.color};color:${t.text}">${t.label}<span style="font-size:9px;opacity:.75;margin-left:4px">${t.people.length}p</span></div>`;
+          h+=`<div class="ag-team-people">`;
+          t.people.forEach(p=>{h+=`<div class="ag-person"><span class="bullet" style="background:${t.border}"></span>${p}</div>`;});
+          h+=`</div></div>`;
         });
-      } else {h+='<div style="font-size:11px;color:var(--text-tertiary);padding:8px 0;font-style:italic">livre</div>';}
-      h+='</div>';
+      } else {
+        h+=`<div style="font-size:11px;color:var(--text-tertiary);padding:8px 0;font-style:italic">livre</div>`;
+      }
+      h+=`</div>`;
     });
   });
   ['Quinta','Sexta'].forEach((day,i)=>{
-    h+='<div class="ag-ch locked">'+day+'</div>';
+    h+=`<div class="ag-ch locked">${day}</div>`;
     const labels=['📋 Treinamentos','👥 Reuniões de Gestão / Rômulo'];
-    for(let w=0;w<4;w++)h+='<div class="ag-cell locked"><div class="ag-locked-label">'+labels[i]+'</div></div>';
+    for(let w=0;w<4;w++)h+=`<div class="ag-cell locked"><div class="ag-locked-label">${labels[i]}</div></div>`;
   });
   h+='</div>';
   document.getElementById('ag-calendar').innerHTML=h;
 }
+
 function agRenderStats(sched){
   const present=new Set();let maxDay=0;
   for(let w=0;w<4;w++)for(let d=0;d<3;d++){const s=sched[w][d];if(s.count>maxDay)maxDay=s.count;s.teams.forEach(t=>t.people.forEach(p=>present.add(p)));}
   const total=new Set(Object.values(AG_TEAMS).flatMap(t=>t.people)).size;
-  document.getElementById('ag-stats').innerHTML='<div class="ag-stat"><div class="ag-stat-val">'+present.size+'<span style="font-size:13px;color:var(--text-tertiary)">/'+total+'</span></div><div class="ag-stat-lbl">Pessoas cobertas/mês</div></div>'
-    +'<div class="ag-stat"><div class="ag-stat-val">100%</div><div class="ag-stat-lbl">Cobertura garantida</div></div>'
-    +'<div class="ag-stat"><div class="ag-stat-val">'+maxDay+'</div><div class="ag-stat-lbl">Maior ocupação/dia</div></div>'
-    +'<div class="ag-stat"><div class="ag-stat-val">'+AG_CAP+'</div><div class="ag-stat-lbl">Capacidade máx./dia</div></div>';
+  document.getElementById('ag-stats').innerHTML=`
+    <div class="ag-stat"><div class="ag-stat-val">${present.size}<span style="font-size:13px;color:var(--text-tertiary)">/${total}</span></div><div class="ag-stat-lbl">Pessoas cobertas/mês</div></div>
+    <div class="ag-stat"><div class="ag-stat-val">100%</div><div class="ag-stat-lbl">Cobertura garantida</div></div>
+    <div class="ag-stat"><div class="ag-stat-val">${maxDay}</div><div class="ag-stat-lbl">Maior ocupação/dia</div></div>
+    <div class="ag-stat"><div class="ag-stat-val">${AG_CAP}</div><div class="ag-stat-lbl">Capacidade máx./dia</div></div>`;
 }
+
 function agRenderCoverage(sched){
   const all=[...new Set(Object.values(AG_TEAMS).flatMap(t=>t.people))].sort();
-  let h='<p class="ag-cov-title">✓ Todos com presença garantida todo mês</p><div class="ag-cov-grid">';
-  all.forEach(p=>{h+='<div class="ag-cov-person ok"><span>'+p+'</span><span class="ag-badge ok">confirmado</span></div>';});
-  h+='</div><p style="font-size:12px;color:var(--text-tertiary);margin-top:.75rem">✅ Grade fixa — todos os '+all.length+' colaboradores têm ao menos uma visita por mês.</p>';
+  let h=`<p class="ag-cov-title">✓ Todos com presença garantida todo mês</p><div class="ag-cov-grid">`;
+  all.forEach(p=>{h+=`<div class="ag-cov-person ok"><span>${p}</span><span class="ag-badge ok">confirmado</span></div>`;});
+  h+=`</div><p style="font-size:12px;color:var(--text-tertiary);margin-top:.75rem">✅ Grade fixa — todos os ${all.length} colaboradores têm ao menos uma visita por mês.</p>`;
   document.getElementById('ag-coverage').innerHTML=h;
 }
+
+// ── Reservas fixas da agenda (não editáveis) ──
 
 // ══════════════════════════════════════════
 // INIT
@@ -642,6 +702,11 @@ document.getElementById('username').addEventListener('change',e=>localStorage.se
 document.getElementById('userteam').addEventListener('change',e=>localStorage.setItem('ih_team',e.target.value));
 document.getElementById('username').addEventListener('input',render);
 document.getElementById('userteam').addEventListener('input',render);
+const FIXED_BOOKINGS = {"2026-07-06__s1": {"name": "João Pedro Morgado", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-07-06__s2": {"name": "Lucas Guimarães", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-07-06__s3": {"name": "Lorena Morais", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-07-06__s4": {"name": "Milton Divino", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-07-07__s1": {"name": "Guilherme Soares", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-07-07__s2": {"name": "Isadora Campos Vaz", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-07-07__s3": {"name": "João Luiz Castelo", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-07-07__s4": {"name": "Paulo Otávio", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-07-08__s1": {"name": "Raphael Cardoso", "team": "Time Laranja", "note": "Agenda fixa", "fixed": true}, "2026-07-08__s2": {"name": "Ewersson Pimentel", "team": "Time Laranja", "note": "Agenda fixa", "fixed": true}, "2026-07-08__c1": {"name": "Leonardo Xavier", "team": "Time Violeta", "note": "Agenda fixa", "fixed": true}, "2026-07-08__c2": {"name": "Marcelo Henrique", "team": "Time Violeta", "note": "Agenda fixa", "fixed": true}, "2026-07-13__s1": {"name": "Adson Luiz", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-07-13__s2": {"name": "Arthur Prado", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-07-13__s3": {"name": "Igor Henrique", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-07-13__s4": {"name": "Paola Leandro", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-07-13__s5": {"name": "Tatiane Arantes", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-07-14__s1": {"name": "Gustavo Alves", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-07-14__s2": {"name": "Ivan Lessa", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-07-14__s3": {"name": "Mateus Souza", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-07-14__s4": {"name": "Sandra Garcez", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-07-14__c1": {"name": "Augusto Meneses", "team": "Time Amarelo", "note": "Agenda fixa", "fixed": true}, "2026-07-15__s1": {"name": "Augusto Barreto", "team": "Time Safira", "note": "Agenda fixa", "fixed": true}, "2026-07-15__s2": {"name": "Dyovana Kerly", "team": "Time Safira", "note": "Agenda fixa", "fixed": true}, "2026-07-15__s3": {"name": "Vitor Tavares", "team": "Time Safira", "note": "Agenda fixa", "fixed": true}, "2026-07-15__c1": {"name": "Rúbia Renata", "team": "Time Vermelho", "note": "Agenda fixa", "fixed": true}, "2026-07-15__c2": {"name": "Thiago Corrêa", "team": "Time Vermelho", "note": "Agenda fixa", "fixed": true}, "2026-07-20__s1": {"name": "Larissa Ramos", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-07-20__s2": {"name": "Gabriel Serejo", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-07-20__s3": {"name": "Mateus Fidelis", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-07-20__s4": {"name": "Bruno Jaime", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-07-21__s1": {"name": "Fábio Junio", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-07-21__s2": {"name": "Rafael Galdino", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-07-21__s3": {"name": "Vinicius Brandão", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-07-21__s4": {"name": "Mariana Marques", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-07-22__s1": {"name": "Allan Wanderson", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-07-22__s2": {"name": "André Luiz", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-07-22__s3": {"name": "Edvaldo Jose", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-07-22__s4": {"name": "Lucas Brito", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-07-22__s5": {"name": "Marcos Paulo", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-07-22__s6": {"name": "Raphael Mota", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-07-27__s1": {"name": "Cecília", "team": "Time Jade", "note": "Agenda fixa", "fixed": true}, "2026-07-27__s2": {"name": "Caroliny Silva", "team": "Time Jade", "note": "Agenda fixa", "fixed": true}, "2026-07-27__s3": {"name": "Stefânia Rodrigues", "team": "Time Jade", "note": "Agenda fixa", "fixed": true}, "2026-07-27__c1": {"name": "Vitória Mugayar", "team": "Time Grená", "note": "Agenda fixa", "fixed": true}, "2026-07-28__c1": {"name": "Marco Túlio", "team": "Time Rubi", "note": "Agenda fixa", "fixed": true}, "2026-07-28__c2": {"name": "Daniella Dias", "team": "Time Rubi", "note": "Agenda fixa", "fixed": true}, "2026-07-28__c3": {"name": "Isabelly Silva", "team": "Time Rubi", "note": "Agenda fixa", "fixed": true}, "2026-08-03__s1": {"name": "João Pedro Morgado", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-08-03__s2": {"name": "Lucas Guimarães", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-08-03__s3": {"name": "Lorena Morais", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-08-03__s4": {"name": "Milton Divino", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-08-04__s1": {"name": "Guilherme Soares", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-08-04__s2": {"name": "Isadora Campos Vaz", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-08-04__s3": {"name": "João Luiz Castelo", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-08-04__s4": {"name": "Paulo Otávio", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-08-05__s1": {"name": "Raphael Cardoso", "team": "Time Laranja", "note": "Agenda fixa", "fixed": true}, "2026-08-05__s2": {"name": "Ewersson Pimentel", "team": "Time Laranja", "note": "Agenda fixa", "fixed": true}, "2026-08-05__c1": {"name": "Leonardo Xavier", "team": "Time Violeta", "note": "Agenda fixa", "fixed": true}, "2026-08-05__c2": {"name": "Marcelo Henrique", "team": "Time Violeta", "note": "Agenda fixa", "fixed": true}, "2026-08-10__s1": {"name": "Adson Luiz", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-08-10__s2": {"name": "Arthur Prado", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-08-10__s3": {"name": "Igor Henrique", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-08-10__s4": {"name": "Paola Leandro", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-08-10__s5": {"name": "Tatiane Arantes", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-08-11__s1": {"name": "Gustavo Alves", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-08-11__s2": {"name": "Ivan Lessa", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-08-11__s3": {"name": "Mateus Souza", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-08-11__s4": {"name": "Sandra Garcez", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-08-11__c1": {"name": "Augusto Meneses", "team": "Time Amarelo", "note": "Agenda fixa", "fixed": true}, "2026-08-12__s1": {"name": "Augusto Barreto", "team": "Time Safira", "note": "Agenda fixa", "fixed": true}, "2026-08-12__s2": {"name": "Dyovana Kerly", "team": "Time Safira", "note": "Agenda fixa", "fixed": true}, "2026-08-12__s3": {"name": "Vitor Tavares", "team": "Time Safira", "note": "Agenda fixa", "fixed": true}, "2026-08-12__c1": {"name": "Rúbia Renata", "team": "Time Vermelho", "note": "Agenda fixa", "fixed": true}, "2026-08-12__c2": {"name": "Thiago Corrêa", "team": "Time Vermelho", "note": "Agenda fixa", "fixed": true}, "2026-08-17__s1": {"name": "Larissa Ramos", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-08-17__s2": {"name": "Gabriel Serejo", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-08-17__s3": {"name": "Mateus Fidelis", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-08-17__s4": {"name": "Bruno Jaime", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-08-18__s1": {"name": "Fábio Junio", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-08-18__s2": {"name": "Rafael Galdino", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-08-18__s3": {"name": "Vinicius Brandão", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-08-18__s4": {"name": "Mariana Marques", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-08-19__s1": {"name": "Allan Wanderson", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-08-19__s2": {"name": "André Luiz", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-08-19__s3": {"name": "Edvaldo Jose", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-08-19__s4": {"name": "Lucas Brito", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-08-19__s5": {"name": "Marcos Paulo", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-08-19__s6": {"name": "Raphael Mota", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-08-24__s1": {"name": "Cecília", "team": "Time Jade", "note": "Agenda fixa", "fixed": true}, "2026-08-24__s2": {"name": "Caroliny Silva", "team": "Time Jade", "note": "Agenda fixa", "fixed": true}, "2026-08-24__s3": {"name": "Stefânia Rodrigues", "team": "Time Jade", "note": "Agenda fixa", "fixed": true}, "2026-08-24__c1": {"name": "Vitória Mugayar", "team": "Time Grená", "note": "Agenda fixa", "fixed": true}, "2026-08-25__c1": {"name": "Marco Túlio", "team": "Time Rubi", "note": "Agenda fixa", "fixed": true}, "2026-08-25__c2": {"name": "Daniella Dias", "team": "Time Rubi", "note": "Agenda fixa", "fixed": true}, "2026-08-25__c3": {"name": "Isabelly Silva", "team": "Time Rubi", "note": "Agenda fixa", "fixed": true}, "2026-09-07__s1": {"name": "João Pedro Morgado", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-09-07__s2": {"name": "Lucas Guimarães", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-09-07__s3": {"name": "Lorena Morais", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-09-07__s4": {"name": "Milton Divino", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-09-08__s1": {"name": "Guilherme Soares", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-09-08__s2": {"name": "Isadora Campos Vaz", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-09-08__s3": {"name": "João Luiz Castelo", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-09-08__s4": {"name": "Paulo Otávio", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-09-09__s1": {"name": "Raphael Cardoso", "team": "Time Laranja", "note": "Agenda fixa", "fixed": true}, "2026-09-09__s2": {"name": "Ewersson Pimentel", "team": "Time Laranja", "note": "Agenda fixa", "fixed": true}, "2026-09-09__c1": {"name": "Leonardo Xavier", "team": "Time Violeta", "note": "Agenda fixa", "fixed": true}, "2026-09-09__c2": {"name": "Marcelo Henrique", "team": "Time Violeta", "note": "Agenda fixa", "fixed": true}, "2026-09-14__s1": {"name": "Adson Luiz", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-09-14__s2": {"name": "Arthur Prado", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-09-14__s3": {"name": "Igor Henrique", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-09-14__s4": {"name": "Paola Leandro", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-09-14__s5": {"name": "Tatiane Arantes", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-09-15__s1": {"name": "Gustavo Alves", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-09-15__s2": {"name": "Ivan Lessa", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-09-15__s3": {"name": "Mateus Souza", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-09-15__s4": {"name": "Sandra Garcez", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-09-15__c1": {"name": "Augusto Meneses", "team": "Time Amarelo", "note": "Agenda fixa", "fixed": true}, "2026-09-16__s1": {"name": "Augusto Barreto", "team": "Time Safira", "note": "Agenda fixa", "fixed": true}, "2026-09-16__s2": {"name": "Dyovana Kerly", "team": "Time Safira", "note": "Agenda fixa", "fixed": true}, "2026-09-16__s3": {"name": "Vitor Tavares", "team": "Time Safira", "note": "Agenda fixa", "fixed": true}, "2026-09-16__c1": {"name": "Rúbia Renata", "team": "Time Vermelho", "note": "Agenda fixa", "fixed": true}, "2026-09-16__c2": {"name": "Thiago Corrêa", "team": "Time Vermelho", "note": "Agenda fixa", "fixed": true}, "2026-09-21__s1": {"name": "Larissa Ramos", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-09-21__s2": {"name": "Gabriel Serejo", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-09-21__s3": {"name": "Mateus Fidelis", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-09-21__s4": {"name": "Bruno Jaime", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-09-22__s1": {"name": "Fábio Junio", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-09-22__s2": {"name": "Rafael Galdino", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-09-22__s3": {"name": "Vinicius Brandão", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-09-22__s4": {"name": "Mariana Marques", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-09-23__s1": {"name": "Allan Wanderson", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-09-23__s2": {"name": "André Luiz", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-09-23__s3": {"name": "Edvaldo Jose", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-09-23__s4": {"name": "Lucas Brito", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-09-23__s5": {"name": "Marcos Paulo", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-09-23__s6": {"name": "Raphael Mota", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-09-28__s1": {"name": "Cecília", "team": "Time Jade", "note": "Agenda fixa", "fixed": true}, "2026-09-28__s2": {"name": "Caroliny Silva", "team": "Time Jade", "note": "Agenda fixa", "fixed": true}, "2026-09-28__s3": {"name": "Stefânia Rodrigues", "team": "Time Jade", "note": "Agenda fixa", "fixed": true}, "2026-09-28__c1": {"name": "Vitória Mugayar", "team": "Time Grená", "note": "Agenda fixa", "fixed": true}, "2026-09-29__c1": {"name": "Marco Túlio", "team": "Time Rubi", "note": "Agenda fixa", "fixed": true}, "2026-09-29__c2": {"name": "Daniella Dias", "team": "Time Rubi", "note": "Agenda fixa", "fixed": true}, "2026-09-29__c3": {"name": "Isabelly Silva", "team": "Time Rubi", "note": "Agenda fixa", "fixed": true}, "2026-10-05__s1": {"name": "João Pedro Morgado", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-10-05__s2": {"name": "Lucas Guimarães", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-10-05__s3": {"name": "Lorena Morais", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-10-05__s4": {"name": "Milton Divino", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-10-06__s1": {"name": "Guilherme Soares", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-10-06__s2": {"name": "Isadora Campos Vaz", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-10-06__s3": {"name": "João Luiz Castelo", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-10-06__s4": {"name": "Paulo Otávio", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-10-07__s1": {"name": "Raphael Cardoso", "team": "Time Laranja", "note": "Agenda fixa", "fixed": true}, "2026-10-07__s2": {"name": "Ewersson Pimentel", "team": "Time Laranja", "note": "Agenda fixa", "fixed": true}, "2026-10-07__c1": {"name": "Leonardo Xavier", "team": "Time Violeta", "note": "Agenda fixa", "fixed": true}, "2026-10-07__c2": {"name": "Marcelo Henrique", "team": "Time Violeta", "note": "Agenda fixa", "fixed": true}, "2026-10-12__s1": {"name": "Adson Luiz", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-10-12__s2": {"name": "Arthur Prado", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-10-12__s3": {"name": "Igor Henrique", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-10-12__s4": {"name": "Paola Leandro", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-10-12__s5": {"name": "Tatiane Arantes", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-10-13__s1": {"name": "Gustavo Alves", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-10-13__s2": {"name": "Ivan Lessa", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-10-13__s3": {"name": "Mateus Souza", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-10-13__s4": {"name": "Sandra Garcez", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-10-13__c1": {"name": "Augusto Meneses", "team": "Time Amarelo", "note": "Agenda fixa", "fixed": true}, "2026-10-14__s1": {"name": "Augusto Barreto", "team": "Time Safira", "note": "Agenda fixa", "fixed": true}, "2026-10-14__s2": {"name": "Dyovana Kerly", "team": "Time Safira", "note": "Agenda fixa", "fixed": true}, "2026-10-14__s3": {"name": "Vitor Tavares", "team": "Time Safira", "note": "Agenda fixa", "fixed": true}, "2026-10-14__c1": {"name": "Rúbia Renata", "team": "Time Vermelho", "note": "Agenda fixa", "fixed": true}, "2026-10-14__c2": {"name": "Thiago Corrêa", "team": "Time Vermelho", "note": "Agenda fixa", "fixed": true}, "2026-10-19__s1": {"name": "Larissa Ramos", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-10-19__s2": {"name": "Gabriel Serejo", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-10-19__s3": {"name": "Mateus Fidelis", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-10-19__s4": {"name": "Bruno Jaime", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-10-20__s1": {"name": "Fábio Junio", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-10-20__s2": {"name": "Rafael Galdino", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-10-20__s3": {"name": "Vinicius Brandão", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-10-20__s4": {"name": "Mariana Marques", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-10-21__s1": {"name": "Allan Wanderson", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-10-21__s2": {"name": "André Luiz", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-10-21__s3": {"name": "Edvaldo Jose", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-10-21__s4": {"name": "Lucas Brito", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-10-21__s5": {"name": "Marcos Paulo", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-10-21__s6": {"name": "Raphael Mota", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-10-26__s1": {"name": "Cecília", "team": "Time Jade", "note": "Agenda fixa", "fixed": true}, "2026-10-26__s2": {"name": "Caroliny Silva", "team": "Time Jade", "note": "Agenda fixa", "fixed": true}, "2026-10-26__s3": {"name": "Stefânia Rodrigues", "team": "Time Jade", "note": "Agenda fixa", "fixed": true}, "2026-10-26__c1": {"name": "Vitória Mugayar", "team": "Time Grená", "note": "Agenda fixa", "fixed": true}, "2026-10-27__c1": {"name": "Marco Túlio", "team": "Time Rubi", "note": "Agenda fixa", "fixed": true}, "2026-10-27__c2": {"name": "Daniella Dias", "team": "Time Rubi", "note": "Agenda fixa", "fixed": true}, "2026-10-27__c3": {"name": "Isabelly Silva", "team": "Time Rubi", "note": "Agenda fixa", "fixed": true}, "2026-11-02__s1": {"name": "João Pedro Morgado", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-11-02__s2": {"name": "Lucas Guimarães", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-11-02__s3": {"name": "Lorena Morais", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-11-02__s4": {"name": "Milton Divino", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-11-03__s1": {"name": "Guilherme Soares", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-11-03__s2": {"name": "Isadora Campos Vaz", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-11-03__s3": {"name": "João Luiz Castelo", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-11-03__s4": {"name": "Paulo Otávio", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-11-04__s1": {"name": "Raphael Cardoso", "team": "Time Laranja", "note": "Agenda fixa", "fixed": true}, "2026-11-04__s2": {"name": "Ewersson Pimentel", "team": "Time Laranja", "note": "Agenda fixa", "fixed": true}, "2026-11-04__c1": {"name": "Leonardo Xavier", "team": "Time Violeta", "note": "Agenda fixa", "fixed": true}, "2026-11-04__c2": {"name": "Marcelo Henrique", "team": "Time Violeta", "note": "Agenda fixa", "fixed": true}, "2026-11-09__s1": {"name": "Adson Luiz", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-11-09__s2": {"name": "Arthur Prado", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-11-09__s3": {"name": "Igor Henrique", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-11-09__s4": {"name": "Paola Leandro", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-11-09__s5": {"name": "Tatiane Arantes", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-11-10__s1": {"name": "Gustavo Alves", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-11-10__s2": {"name": "Ivan Lessa", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-11-10__s3": {"name": "Mateus Souza", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-11-10__s4": {"name": "Sandra Garcez", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-11-10__c1": {"name": "Augusto Meneses", "team": "Time Amarelo", "note": "Agenda fixa", "fixed": true}, "2026-11-11__s1": {"name": "Augusto Barreto", "team": "Time Safira", "note": "Agenda fixa", "fixed": true}, "2026-11-11__s2": {"name": "Dyovana Kerly", "team": "Time Safira", "note": "Agenda fixa", "fixed": true}, "2026-11-11__s3": {"name": "Vitor Tavares", "team": "Time Safira", "note": "Agenda fixa", "fixed": true}, "2026-11-11__c1": {"name": "Rúbia Renata", "team": "Time Vermelho", "note": "Agenda fixa", "fixed": true}, "2026-11-11__c2": {"name": "Thiago Corrêa", "team": "Time Vermelho", "note": "Agenda fixa", "fixed": true}, "2026-11-16__s1": {"name": "Larissa Ramos", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-11-16__s2": {"name": "Gabriel Serejo", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-11-16__s3": {"name": "Mateus Fidelis", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-11-16__s4": {"name": "Bruno Jaime", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-11-17__s1": {"name": "Fábio Junio", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-11-17__s2": {"name": "Rafael Galdino", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-11-17__s3": {"name": "Vinicius Brandão", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-11-17__s4": {"name": "Mariana Marques", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-11-18__s1": {"name": "Allan Wanderson", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-11-18__s2": {"name": "André Luiz", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-11-18__s3": {"name": "Edvaldo Jose", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-11-18__s4": {"name": "Lucas Brito", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-11-18__s5": {"name": "Marcos Paulo", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-11-18__s6": {"name": "Raphael Mota", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-11-23__s1": {"name": "Cecília", "team": "Time Jade", "note": "Agenda fixa", "fixed": true}, "2026-11-23__s2": {"name": "Caroliny Silva", "team": "Time Jade", "note": "Agenda fixa", "fixed": true}, "2026-11-23__s3": {"name": "Stefânia Rodrigues", "team": "Time Jade", "note": "Agenda fixa", "fixed": true}, "2026-11-23__c1": {"name": "Vitória Mugayar", "team": "Time Grená", "note": "Agenda fixa", "fixed": true}, "2026-11-24__c1": {"name": "Marco Túlio", "team": "Time Rubi", "note": "Agenda fixa", "fixed": true}, "2026-11-24__c2": {"name": "Daniella Dias", "team": "Time Rubi", "note": "Agenda fixa", "fixed": true}, "2026-11-24__c3": {"name": "Isabelly Silva", "team": "Time Rubi", "note": "Agenda fixa", "fixed": true}, "2026-12-07__s1": {"name": "João Pedro Morgado", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-12-07__s2": {"name": "Lucas Guimarães", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-12-07__s3": {"name": "Lorena Morais", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-12-07__s4": {"name": "Milton Divino", "team": "Time Titânio", "note": "Agenda fixa", "fixed": true}, "2026-12-08__s1": {"name": "Guilherme Soares", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-12-08__s2": {"name": "Isadora Campos Vaz", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-12-08__s3": {"name": "João Luiz Castelo", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-12-08__s4": {"name": "Paulo Otávio", "team": "Time Magenta", "note": "Agenda fixa", "fixed": true}, "2026-12-09__s1": {"name": "Raphael Cardoso", "team": "Time Laranja", "note": "Agenda fixa", "fixed": true}, "2026-12-09__s2": {"name": "Ewersson Pimentel", "team": "Time Laranja", "note": "Agenda fixa", "fixed": true}, "2026-12-09__c1": {"name": "Leonardo Xavier", "team": "Time Violeta", "note": "Agenda fixa", "fixed": true}, "2026-12-09__c2": {"name": "Marcelo Henrique", "team": "Time Violeta", "note": "Agenda fixa", "fixed": true}, "2026-12-14__s1": {"name": "Adson Luiz", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-12-14__s2": {"name": "Arthur Prado", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-12-14__s3": {"name": "Igor Henrique", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-12-14__s4": {"name": "Paola Leandro", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-12-14__s5": {"name": "Tatiane Arantes", "team": "Time Azul", "note": "Agenda fixa", "fixed": true}, "2026-12-15__s1": {"name": "Gustavo Alves", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-12-15__s2": {"name": "Ivan Lessa", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-12-15__s3": {"name": "Mateus Souza", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-12-15__s4": {"name": "Sandra Garcez", "team": "Time Prata", "note": "Agenda fixa", "fixed": true}, "2026-12-15__c1": {"name": "Augusto Meneses", "team": "Time Amarelo", "note": "Agenda fixa", "fixed": true}, "2026-12-16__s1": {"name": "Augusto Barreto", "team": "Time Safira", "note": "Agenda fixa", "fixed": true}, "2026-12-16__s2": {"name": "Dyovana Kerly", "team": "Time Safira", "note": "Agenda fixa", "fixed": true}, "2026-12-16__s3": {"name": "Vitor Tavares", "team": "Time Safira", "note": "Agenda fixa", "fixed": true}, "2026-12-16__c1": {"name": "Rúbia Renata", "team": "Time Vermelho", "note": "Agenda fixa", "fixed": true}, "2026-12-16__c2": {"name": "Thiago Corrêa", "team": "Time Vermelho", "note": "Agenda fixa", "fixed": true}, "2026-12-21__s1": {"name": "Larissa Ramos", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-12-21__s2": {"name": "Gabriel Serejo", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-12-21__s3": {"name": "Mateus Fidelis", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-12-21__s4": {"name": "Bruno Jaime", "team": "Time Turquesa", "note": "Agenda fixa", "fixed": true}, "2026-12-22__s1": {"name": "Fábio Junio", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-12-22__s2": {"name": "Rafael Galdino", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-12-22__s3": {"name": "Vinicius Brandão", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-12-22__s4": {"name": "Mariana Marques", "team": "Time Salmão", "note": "Agenda fixa", "fixed": true}, "2026-12-23__s1": {"name": "Allan Wanderson", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-12-23__s2": {"name": "André Luiz", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-12-23__s3": {"name": "Edvaldo Jose", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-12-23__s4": {"name": "Lucas Brito", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-12-23__s5": {"name": "Marcos Paulo", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-12-23__s6": {"name": "Raphael Mota", "team": "Time Sépia", "note": "Agenda fixa", "fixed": true}, "2026-12-28__s1": {"name": "Cecília", "team": "Time Jade", "note": "Agenda fixa", "fixed": true}, "2026-12-28__s2": {"name": "Caroliny Silva", "team": "Time Jade", "note": "Agenda fixa", "fixed": true}, "2026-12-28__s3": {"name": "Stefânia Rodrigues", "team": "Time Jade", "note": "Agenda fixa", "fixed": true}, "2026-12-28__c1": {"name": "Vitória Mugayar", "team": "Time Grená", "note": "Agenda fixa", "fixed": true}, "2026-12-29__c1": {"name": "Marco Túlio", "team": "Time Rubi", "note": "Agenda fixa", "fixed": true}, "2026-12-29__c2": {"name": "Daniella Dias", "team": "Time Rubi", "note": "Agenda fixa", "fixed": true}, "2026-12-29__c3": {"name": "Isabelly Silva", "team": "Time Rubi", "note": "Agenda fixa", "fixed": true}};
+
+// Adiciona loading bar no HTML se não existir
+if(!document.getElementById('loading-bar')){const lb=document.createElement('div');lb.id='loading-bar';lb.className='loading-bar';lb.style.cssText='position:fixed;top:0;left:0;height:3px;background:#378ADD;width:0%;transition:width .3s;z-index:9999';document.body.prepend(lb);}
+
 loadBookings();
 </script>
 </body>
