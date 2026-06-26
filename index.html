@@ -308,11 +308,27 @@ const R_SPOTS = [
   {id:'s9',label:'Lugar 9',section:'sala'},
 ];
 const R_DAYS = ['Seg','Ter','Qua','Qui','Sex'];
-const STORAGE_KEY = 'implanta_bookings_v2';
 let weekOffset = 0, bookings = {}, pendingAction = null;
 
-function load(){try{const d=localStorage.getItem(STORAGE_KEY);if(d)bookings=JSON.parse(d);}catch(e){bookings={};}}
-function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(bookings));}catch(e){}}
+async function load(){
+  try {
+    const mon = getMonday(weekOffset);
+    const week = mon.toISOString().slice(0,10);
+    const res = await fetch('/api/bookings?week='+week);
+    if(!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    const rows = Array.isArray(data)?data:data.rows||data.bookings||data.data||[];
+    bookings = {};
+    rows.forEach(b=>{
+      const k=b.day_key+'__'+b.spot_id;
+      bookings[k]={id:b.id,name:b.name,team:b.team||'',note:b.note||'',recurrent:b.recurrent,fixed:b.note==='Agenda fixa'};
+      if(b.recurrent&&b.rec_dow!=null){
+        bookings['rec__'+b.rec_dow+'__'+b.spot_id]={id:b.id,name:b.name,team:b.team||'',note:b.note||'',recurrent:true};
+      }
+    });
+  } catch(e){console.error('Erro ao carregar reservas:',e);bookings={};}
+}
+function save(){}
 function getMonday(off){const t=new Date(),day=t.getDay();const mon=new Date(t.setDate(t.getDate()-(day===0?6:day-1)));mon.setDate(mon.getDate()+off*7);mon.setHours(0,0,0,0);return mon;}
 function dKey(d){return d.toISOString().slice(0,10)}
 function bKey(dk,sid){return dk+'__'+sid}
@@ -399,7 +415,7 @@ function askBook(k,label,dk){
     <label class="modal-check"><input type="checkbox" id="book-recur"> Repetir toda semana neste mesmo lugar e dia</label>
     <div class="modal-btns"><button onclick="closeModal()">Cancelar</button><button class="btn-confirm" onclick="confirmBook()">Confirmar reserva</button></div>`);
 }
-function confirmBook(){if(!pendingAction||pendingAction.type!=='book')return;const note=(document.getElementById('book-note').value||'').trim();const recur=document.getElementById('book-recur').checked;const entry={name:pendingAction.me,team:pendingAction.team||'',note};bookings[pendingAction.k]=entry;if(recur){const d=new Date(pendingAction.dk),dow=d.getDay()===0?6:d.getDay()-1,sid=pendingAction.k.split('__')[1];bookings[`rec__${dow}__${sid}`]={...entry,recurrent:true};}save();closeModal();render();showToast('Reserva confirmada!','#97C459');}
+function confirmBook(){if(!pendingAction||pendingAction.type!=='book')return;const note=(document.getElementById('book-note').value||'').trim();const recur=document.getElementById('book-recur').checked;const entry={name:pendingAction.me,team:pendingAction.team||'',note};bookings[pendingAction.k]=entry;if(recur){const d=new Date(pendingAction.dk),dow=d.getDay()===0?6:d.getDay()-1,sid=pendingAction.k.split('__')[1];bookings[`rec__${dow}__${sid}`]={...entry,recurrent:true};}closeModal();showToast('Reserva confirmada!','#97C459');refresh();}
 
 function askCancel(k,label,dk,isRecur){
   pendingAction={type:'cancel',k,dk,isRecur};
@@ -412,7 +428,7 @@ function askCancel(k,label,dk,isRecur){
   else{showModal(`<h3>&#128465; Cancelar reserva</h3><p>Cancelar reserva em <strong>${esc(label)}</strong> no dia <strong>${fmtFull(dk)}</strong>?</p>
     <div class="modal-btns"><button onclick="closeModal()">Manter</button><button class="btn-cancel" onclick="confirmCancel('only')">Cancelar reserva</button></div>`);}
 }
-function confirmCancel(scope){if(!pendingAction||pendingAction.type!=='cancel')return;delete bookings[pendingAction.k];if(pendingAction.isRecur&&scope==='all'){const sid=pendingAction.k.split('__')[1],d=new Date(pendingAction.dk),dow=d.getDay()===0?6:d.getDay()-1;delete bookings[`rec__${dow}__${sid}`];}save();closeModal();render();showToast(scope==='all'?'Recorrência cancelada.':'Reserva cancelada.','#F09595');}
+function confirmCancel(scope){if(!pendingAction||pendingAction.type!=='cancel')return;delete bookings[pendingAction.k];if(pendingAction.isRecur&&scope==='all'){const sid=pendingAction.k.split('__')[1],d=new Date(pendingAction.dk),dow=d.getDay()===0?6:d.getDay()-1;delete bookings[`rec__${dow}__${sid}`];}closeModal();showToast(scope==='all'?'Recorrência cancelada.':'Reserva cancelada.','#F09595');refresh();}
 
 function askBookSection(dk,sec){
   const me=getName(),team=getTeam();
@@ -435,8 +451,8 @@ function askBookAllModal(sec){
     <div class="modal-field"><label>Motivo / evento</label><input type="text" id="bookall-note2" placeholder="ex: Sprint review..."></div>
     <div class="modal-btns"><button onclick="closeModal()">Cancelar</button><button class="btn-confirm" onclick="confirmBookAllPick()">Confirmar</button></div>`);
 }
-function confirmBookAllPick(){const me=getName(),team=getTeam(),dk=document.getElementById('bookall-day').value,note=(document.getElementById('bookall-note2').value||'').trim(),sec=pendingAction.sec||'all',free=filterSection(R_SPOTS,sec).filter(s=>!getEffBooking(dk,s.id));free.forEach(s=>{bookings[bKey(dk,s.id)]={name:me,team:team||'',note};});save();closeModal();render();showToast(`${free.length} lugar${free.length!==1?'es':''} reservado${free.length!==1?'s':''}!`,'#97C459');}
-function confirmBookAll(){if(!pendingAction||pendingAction.type!=='bookall')return;const note=(document.getElementById('bookall-note').value||'').trim();pendingAction.free.forEach(s=>{bookings[bKey(pendingAction.dk,s.id)]={name:pendingAction.me,team:pendingAction.team||'',note};});save();closeModal();render();showToast(`${pendingAction.free.length} lugares reservados!`,'#97C459');}
+function confirmBookAllPick(){const me=getName(),team=getTeam(),dk=document.getElementById('bookall-day').value,note=(document.getElementById('bookall-note2').value||'').trim(),sec=pendingAction.sec||'all',free=filterSection(R_SPOTS,sec).filter(s=>!getEffBooking(dk,s.id));free.forEach(s=>{bookings[bKey(dk,s.id)]={name:me,team:team||'',note};});closeModal();showToast(`${free.length} lugar${free.length!==1?'es':''} reservado${free.length!==1?'s':''}!`,'#97C459');refresh();}
+function confirmBookAll(){if(!pendingAction||pendingAction.type!=='bookall')return;const note=(document.getElementById('bookall-note').value||'').trim();pendingAction.free.forEach(s=>{bookings[bKey(pendingAction.dk,s.id)]={name:pendingAction.me,team:pendingAction.team||'',note};});closeModal();showToast(`${pendingAction.free.length} lugares reservados!`,'#97C459');refresh();}
 
 function showMyReservations(){
   const me=getName();if(!me){showToast('Informe seu nome para ver suas reservas','#F09595');return;}
@@ -449,8 +465,6 @@ function showMyReservations(){
   showModal(`<h3>&#9776; Minhas reservas — ${esc(me)}</h3><div style="max-height:340px;overflow-y:auto">${list}</div><div class="modal-btns" style="margin-top:1rem"><button onclick="closeModal()">Fechar</button></div>`);
 }
 
-function changeWeek(d){weekOffset+=d;render();}
-function goToday(){weekOffset=0;render();}
 
 // ════════════════════════════════════════════
 // AGENDA FIXA
@@ -576,9 +590,15 @@ function agRenderCoverage(sched){
 }
 
 // ── Init ──
-document.addEventListener('DOMContentLoaded', function(){
-  load();
+async function refresh(){
+  await load();
   render();
+}
+function changeWeek(d){weekOffset+=d;refresh();}
+function goToday(){weekOffset=0;refresh();}
+
+document.addEventListener('DOMContentLoaded', async function(){
+  await refresh();
   document.getElementById('username').addEventListener('input', render);
   document.getElementById('userteam').addEventListener('input', render);
 });
