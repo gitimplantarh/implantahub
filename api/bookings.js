@@ -7,7 +7,7 @@ const pool = new Pool({
   user:     process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   port:     parseInt(process.env.DB_PORT || '5432'),
-  ssl:      true
+  ssl:      { rejectUnauthorized: false }
 });
 
 // Garante que a tabela existe na primeira execução
@@ -43,18 +43,26 @@ export default async function handler(req, res) {
   try {
     await ensureTable();
 
-    // GET /api/bookings?week=YYYY-MM-DD
+    // GET /api/bookings?week=YYYY-MM-DD  ou  ?from=YYYY-MM-DD&to=YYYY-MM-DD
     if (req.method === 'GET') {
-      const { week } = req.query;
+      const { week, from, to } = req.query;
 
-      // Busca reservas normais da semana
+      // Determina o range de datas: aceita ?from=&to= ou ?week=
+      const dateFrom = from || week;
+      const dateTo   = to   || getEndOfWeek(week);
+
+      if (!dateFrom) {
+        return res.status(400).json({ error: 'Parâmetro week ou from/to é obrigatório' });
+      }
+
+      // Busca reservas normais no range
       const { rows: normal } = await pool.query(
         `SELECT id, spot_id, day_key, name, team, note, recurrent, rec_dow
          FROM bookings
          WHERE recurrent = false
            AND day_key >= $1
            AND day_key <= $2`,
-        [week, getEndOfWeek(week)]
+        [dateFrom, dateTo]
       );
 
       // Busca reservas recorrentes
