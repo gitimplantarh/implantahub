@@ -36,6 +36,23 @@
     body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg-tertiary);color:var(--text);min-height:100vh}
     .page{max-width:1020px;margin:0 auto;padding:0 0 4rem;background:var(--bg);border-radius:0 0 16px 16px;min-height:100vh}
 
+
+    /* ── Mural de avisos ── */
+    .notice-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;position:relative;transition:box-shadow .15s;box-shadow:0 1px 4px rgba(0,66,177,0.06)}
+    .notice-card:hover{box-shadow:0 4px 16px rgba(0,66,177,0.12)}
+    .notice-card.pinned{border-color:var(--implanta-blue);background:var(--bg-secondary)}
+    .notice-emoji{font-size:28px;margin-bottom:.5rem;display:block}
+    .notice-msg{font-size:14px;color:var(--text);line-height:1.6;margin-bottom:.75rem;word-break:break-word}
+    .notice-meta{font-size:11px;color:var(--text-tertiary);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px}
+    .notice-author{font-weight:500;color:var(--text-secondary)}
+    .notice-del{background:none;border:none;cursor:pointer;color:var(--text-tertiary);padding:2px 4px;border-radius:4px;font-size:12px;transition:color .15s,background .15s}
+    .notice-del:hover{color:var(--red-text);background:var(--red-bg)}
+    .emoji-opt{padding:5px 10px;border-radius:20px;border:1px solid var(--border);background:var(--bg-secondary);font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+    .emoji-opt:hover{border-color:var(--implanta-blue-light);background:var(--blue-bg)}
+    .emoji-opt.active{border-color:var(--implanta-blue);background:var(--blue-bg);color:var(--implanta-blue);font-weight:500}
+    .notice-empty{grid-column:1/-1;text-align:center;padding:3rem 1rem;color:var(--text-tertiary);font-size:14px}
+    .notice-empty .empty-icon{font-size:40px;display:block;margin-bottom:.75rem;opacity:.4}
+
     /* ── Topbar ── */
     .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:0;flex-wrap:wrap;gap:12px;background:var(--bg);padding:1rem 1.25rem;border-radius:0;border-bottom:2px solid var(--implanta-blue)}
     .logo{display:flex;align-items:center;gap:10px}
@@ -195,23 +212,24 @@
         <div class="logo-sub">Escritório Goiânia</div>
       </div>
     </div>
-    <div class="nav-group" id="res-nav">
+    <div class="nav-group" id="res-nav" style="display:none">
       <button onclick="changeWeek(-1)" aria-label="Semana anterior"><i class="ti ti-chevron-left"></i></button>
       <span class="week-label" id="week-label"></span>
       <button onclick="changeWeek(1)" aria-label="Próxima semana"><i class="ti ti-chevron-right"></i></button>
       <button onclick="goToday()">Hoje</button>
-      <button onclick="toggleVisaoMensal(this)" id="btn-visao" style="display:inline-flex;align-items:center;gap:5px"><i class="ti ti-calendar-month" style="font-size:14px;vertical-align:-2px;margin-right:5px"></i> Visão mensal</button>
     </div>
   </div>
 
   <!-- tabs -->
   <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('reservas',this);document.getElementById('btn-visao').style.background='';document.getElementById('btn-visao').style.color=''"><i class="ti ti-armchair" style="font-size:20px"></i> Reservar posto</button>
+    <button class="tab-btn active" id="tab-btn-mural" onclick="switchTab('mural',this)"><i class="ti ti-speakerphone" style="font-size:13px;vertical-align:-2px;margin-right:5px"></i> Mural <span id="notices-count" style="background:var(--implanta-blue);color:#fff;border-radius:10px;padding:1px 6px;font-size:11px;margin-left:2px;display:none"></span></button>
+    <button class="tab-btn" id="tab-btn-reservas" onclick="switchTab('reservas',this)"><i class="ti ti-armchair" style="font-size:13px;vertical-align:-2px;margin-right:5px"></i> Reservar posto</button>
+    <button class="tab-btn" id="tab-btn-agenda" onclick="switchTab('agenda',this)"><i class="ti ti-calendar-month" style="font-size:13px;vertical-align:-2px;margin-right:5px"></i> Visão mensal</button>
   </div>
 
   <div style="padding:1.5rem 1.25rem 0" id="content-area">
   <!-- ══════ TAB RESERVAS ══════ -->
-  <div class="tab-panel active" id="tab-reservas">
+  <div class="tab-panel" id="tab-reservas">
 
     <div class="card">
       <div class="card-title">Suas informações</div>
@@ -279,6 +297,53 @@
 
   </div><!-- /tab-agenda -->
 
+
+  <!-- ══════ TAB MURAL ══════ -->
+  <div class="tab-panel active" id="tab-mural">
+    <div style="padding:1.5rem 1.25rem 0">
+
+      <!-- Post form -->
+      <div class="card" id="notice-form-card">
+        <div class="card-title"><i class="ti ti-speakerphone" style="font-size:13px;vertical-align:-2px;margin-right:5px"></i> Novo aviso para o Hub</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem">
+          <div class="field" style="flex:1;min-width:160px">
+            <label>Seu nome</label>
+            <input type="text" id="notice-author" placeholder="ex: Cecília" autocomplete="off">
+          </div>
+          <div class="field" style="flex:1;min-width:160px">
+            <label>Time</label>
+            <input type="text" id="notice-team" placeholder="ex: Time Jade" autocomplete="off">
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:1rem">
+          <label>Mensagem</label>
+          <textarea id="notice-msg" placeholder="ex: Por favor recolha o lixo antes de sair! 🙏" style="width:100%;padding:10px 12px;border:0.5px solid var(--border-md);border-radius:var(--radius-md);font-size:14px;background:var(--bg-secondary);color:var(--text);outline:none;font-family:inherit;resize:vertical;min-height:80px;transition:border-color .15s" onfocus="this.style.borderColor='var(--implanta-blue-light)'" onblur="this.style.borderColor='var(--border-md)'"></textarea>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <div class="field">
+            <label>Tom do aviso</label>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px" id="emoji-picker">
+              <button class="emoji-opt active" data-emoji="📌" onclick="selectEmoji(this,'📌')">📌 Aviso</button>
+              <button class="emoji-opt" data-emoji="🧹" onclick="selectEmoji(this,'🧹')">🧹 Limpeza</button>
+              <button class="emoji-opt" data-emoji="🎉" onclick="selectEmoji(this,'🎉')">🎉 Celebração</button>
+              <button class="emoji-opt" data-emoji="⚠️" onclick="selectEmoji(this,'⚠️')">⚠️ Atenção</button>
+              <button class="emoji-opt" data-emoji="💡" onclick="selectEmoji(this,'💡')">💡 Ideia</button>
+              <button class="emoji-opt" data-emoji="❤️" onclick="selectEmoji(this,'❤️')">❤️ Grato</button>
+            </div>
+          </div>
+          <button class="btn btn-green" style="margin-top:auto;padding:10px 20px" onclick="postNotice()">
+            <i class="ti ti-send" style="font-size:14px;vertical-align:-2px"></i> Publicar aviso
+          </button>
+        </div>
+      </div>
+
+      <!-- Board -->
+      <div id="notices-board" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:2rem">
+        <div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-tertiary);font-size:13px">Carregando avisos...</div>
+      </div>
+
+    </div>
+  </div><!-- /tab-mural -->
 </div><!-- /content-area -->
 </div><!-- /page -->
 
@@ -294,28 +359,13 @@ function switchTab(name, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   if(btn) btn.classList.add('active');
+  const nav = document.getElementById('res-nav');
+  if(nav) nav.style.display = name==='reservas' ? 'flex' : 'none';
+  if(name==='mural')  { loadNotices(); syncNoticeFields(); }
+  if(name==='agenda') { agBuild(); }
 }
 
-function toggleVisaoMensal(btn){
-  const panel = document.getElementById('tab-agenda');
-  const reservas = document.getElementById('tab-reservas');
-  const isOpen = panel.classList.contains('active');
-  if(isOpen){
-    panel.classList.remove('active');
-    reservas.classList.add('active');
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    document.querySelector('.tab-btn').classList.add('active');
-    btn.style.background='';
-    btn.style.color='';
-  } else {
-    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    panel.classList.add('active');
-    btn.style.background='var(--bg-tertiary)';
-    btn.style.color='var(--text)';
-    agBuild();
-  }
-}
+
 
 // ════════════════════════════════════════════
 // RESERVAS
@@ -645,6 +695,123 @@ function showMyReservations(){
 // ════════════════════════════════════════════
 // AGENDA FIXA
 // ════════════════════════════════════════════
+
+// ════════════════════════════════════════════
+// MURAL DE AVISOS
+// ════════════════════════════════════════════
+let selectedEmoji = '📌';
+const ADMIN_NOTICE_PWD = 'implanta2026';
+
+function selectEmoji(btn, emoji){
+  selectedEmoji = emoji;
+  document.querySelectorAll('.emoji-opt').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+async function loadNotices(){
+  try {
+    const res = await fetch('/api/notices');
+    if(!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    const rows = Array.isArray(data)?data:data.rows||[];
+    renderNotices(rows);
+  } catch(e){
+    document.getElementById('notices-board').innerHTML=`<div class="notice-empty"><span class="empty-icon"><i class="ti ti-speakerphone" style="font-size:40px;opacity:.3"></i></span>Não foi possível carregar os avisos.<br><small>${e.message}</small></div>`;
+  }
+}
+
+function renderNotices(rows){
+  const board = document.getElementById('notices-board');
+  const count = document.getElementById('notices-count');
+  if(count){ if(rows.length>0){count.textContent=rows.length;count.style.display='inline';}else{count.style.display='none';} }
+  if(rows.length===0){
+    board.innerHTML=`<div class="notice-empty"><span class="empty-icon">📋</span>Nenhum aviso no momento.<br><small>Seja o primeiro a deixar um recado para o time!</small></div>`;
+    return;
+  }
+  board.innerHTML = rows.map(n=>{
+    const dt = new Date(n.created_at);
+    const dtStr = dt.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    return `<div class="notice-card${n.pinned?' pinned':''}">
+      ${n.pinned?'<div style="font-size:10px;font-weight:600;color:var(--implanta-blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;display:flex;align-items:center;gap:4px"><i class="ti ti-pin" style="font-size:11px"></i> Fixado</div>':''}
+      <span class="notice-emoji">${n.emoji||'📌'}</span>
+      <div class="notice-msg">${esc(n.message)}</div>
+      <div class="notice-meta">
+        <span><span class="notice-author">${esc(n.author)}</span>${n.team?' · '+esc(n.team):''}</span>
+        <span style="display:flex;align-items:center;gap:4px">
+          <span>${dtStr}</span>
+          <button class="notice-del" onclick="askPinNotice(${n.id},${n.pinned})" title="${n.pinned?'Desafixar':'Fixar no topo'}"><i class="ti ti-pin${n.pinned?'-filled':''}" style="font-size:12px"></i></button>
+          <button class="notice-del" onclick="askDeleteNotice(${n.id})" title="Excluir aviso"><i class="ti ti-trash" style="font-size:12px"></i></button>
+        </span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function postNotice(){
+  const author = (document.getElementById('notice-author').value||'').trim();
+  const team   = (document.getElementById('notice-team').value||'').trim();
+  const message= (document.getElementById('notice-msg').value||'').trim();
+  if(!author){ showToast('Informe seu nome antes de publicar','#EF9A9A'); return; }
+  if(!message){ showToast('Escreva uma mensagem antes de publicar','#EF9A9A'); return; }
+  try {
+    const res = await fetch('/api/notices',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({author,team,message,emoji:selectedEmoji})
+    });
+    if(!res.ok) throw new Error(await res.text());
+    document.getElementById('notice-msg').value='';
+    showToast('Aviso publicado! 📌','#92F15B');
+    loadNotices();
+  } catch(e){ showToast('Erro ao publicar: '+e.message,'#EF9A9A'); }
+}
+
+function askDeleteNotice(id){
+  const pwd = prompt('Senha de administrador para excluir este aviso:');
+  if(pwd===null) return;
+  if(pwd !== ADMIN_NOTICE_PWD){ showToast('Senha incorreta','#EF9A9A'); return; }
+  confirmDeleteNotice(id);
+}
+
+async function confirmDeleteNotice(id){
+  try {
+    const res = await fetch('/api/notices/'+id,{method:'DELETE'});
+    if(!res.ok) throw new Error(res.status);
+    showToast('Aviso excluído','#9EA2A2');
+    loadNotices();
+  } catch(e){ showToast('Erro ao excluir: '+e.message,'#EF9A9A'); }
+}
+
+function askPinNotice(id, isPinned){
+  const pwd = prompt('Senha de administrador para '+(isPinned?'desafixar':'fixar')+' este aviso:');
+  if(pwd===null) return;
+  if(pwd !== ADMIN_NOTICE_PWD){ showToast('Senha incorreta','#EF9A9A'); return; }
+  confirmPinNotice(id, !isPinned);
+}
+
+async function confirmPinNotice(id, pin){
+  try {
+    const res = await fetch('/api/notices/'+id+'/pin',{
+      method:'PATCH',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({pinned:pin})
+    });
+    if(!res.ok) throw new Error(res.status);
+    showToast(pin?'Aviso fixado no topo 📌':'Aviso desafixado','#92F15B');
+    loadNotices();
+  } catch(e){ showToast('Erro: '+e.message,'#EF9A9A'); }
+}
+
+// Sync notice-author and notice-team with main fields
+function syncNoticeFields(){
+  const name = document.getElementById('username')?.value||'';
+  const team = document.getElementById('userteam')?.value||'';
+  const na = document.getElementById('notice-author');
+  const nt = document.getElementById('notice-team');
+  if(na&&!na.value&&name) na.value=name;
+  if(nt&&!nt.value&&team) nt.value=team;
+}
+
 // ════════════════════════════════════════════
 // VISÃO MENSAL — lê do banco
 // ════════════════════════════════════════════
@@ -842,9 +1009,15 @@ function changeWeek(d){weekOffset+=d;refresh();}
 function goToday(){weekOffset=0;refresh();}
 
 document.addEventListener('DOMContentLoaded', async function(){
-  await refresh();
+  // Start on mural
+  loadNotices();
+  // Pre-load reservas in background
+  refresh();
   document.getElementById('username').addEventListener('input', render);
   document.getElementById('userteam').addEventListener('input', render);
+  // Hide nav arrows (not on reservas tab)
+  const nav = document.getElementById('res-nav');
+  if(nav) nav.style.display = 'none';
 });
 </script>
 </body>
