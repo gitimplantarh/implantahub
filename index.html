@@ -407,7 +407,16 @@ function render(){
     dates.forEach(d=>{
       const dk=dKey(d),k=bKey(dk,spot.id),b=getEffBooking(dk,spot.id),past=isPast(d);
       let state,nameLabel,teamLabel='',onclick,disabled,noteLabel='';
-      if(b){const isFixed=b.fixed===true;const ismine=!isFixed&&me&&b.name===me;const isrecur=b.recurrent&&ismine;state=isrecur?'recur':ismine?'mine':'taken';nameLabel=b.name;teamLabel=b.team||'';noteLabel=b.note||'';onclick=ismine?`askCancel('${k}','${esc(spot.label)}','${dk}',${b.recurrent?'true':'false'})`:null;disabled=!ismine;}
+      if(b){
+        const isFixed=b.fixed===true;
+        const ismine=!isFixed&&me&&b.name===me;
+        const isrecur=b.recurrent&&ismine;
+        state=isrecur?'recur':ismine?'mine':'taken';
+        nameLabel=b.name;teamLabel=b.team||'';noteLabel=b.note||'';
+        const bId=b.id||'';
+        onclick=`askSpotInfo('${k}','${esc(spot.label)}','${dk}','${esc(b.name)}','${esc(b.team||'')}','${esc(b.note||'')}','${bId}',${ismine?'true':'false'},${isrecur?'true':'false'})`;
+        disabled=false;
+      }
       else if(past){state='past';nameLabel='';disabled=true;onclick=null;}
       else{state='free';nameLabel='livre';disabled=false;onclick=`askBook('${k}','${esc(spot.label)}','${dk}')`;}
       const tc=state==='mine'||state==='recur'?'var(--green-text)':state==='taken'?'var(--red-text)':'var(--text-tertiary)';
@@ -443,6 +452,62 @@ function askBook(k,label,dk){
     <div class="modal-btns"><button onclick="closeModal()">Cancelar</button><button class="btn-confirm" onclick="confirmBook()">Confirmar reserva</button></div>`);
 }
 
+
+// ── Outlook calendar link ──
+function outlookLink(dk, spotLabel, name, note){
+  const [y,m,d] = dk.split('-');
+  const start = `${y}-${m}-${d}T09:00:00`;
+  const end   = `${y}-${m}-${d}T18:00:00`;
+  const title = encodeURIComponent(`Presencial Implanta — ${spotLabel}`);
+  const body  = encodeURIComponent(`Reserva: ${spotLabel}\nResponsável: ${name}${note?' | '+note:''}`);
+  return `https://outlook.office.com/calendar/deeplink/compose?subject=${title}&startdt=${encodeURIComponent(start)}&enddt=${encodeURIComponent(end)}&body=${body}&allday=false`;
+}
+
+function showOutlookModal(dk, spotLabel, name, note){
+  const url = outlookLink(dk, spotLabel, name, note);
+  const [y,m,d] = dk.split('-');
+  showModal(`
+    <h3><i class="ti ti-circle-check" style="font-size:18px;vertical-align:-3px;margin-right:6px;color:var(--implanta-blue)"></i> Reserva confirmada!</h3>
+    <p><strong>${esc(spotLabel)}</strong> · ${d}/${m}/${y}<br>Responsável: <strong>${esc(name)}</strong></p>
+    <p style="margin-top:.5rem;font-size:13px;color:var(--text-secondary)">Quer salvar este dia no seu calendário?</p>
+    <div class="modal-btns" style="margin-top:1.25rem;justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <a href="${url}" target="_blank" rel="noopener" style="text-decoration:none">
+        <button class="btn-confirm" style="display:inline-flex;align-items:center;gap:6px">
+          <i class="ti ti-calendar-event"></i> Salvar no Outlook
+        </button>
+      </a>
+      <button onclick="closeModal()">Fechar</button>
+    </div>`);
+}
+
+function askSpotInfo(k, label, dk, bookingName, bookingTeam, bookingNote, bookingId, isOwn, isRecur){
+  const [y,m,d] = dk.split('-');
+  const sec = k.split('__')[1].startsWith('c') ? 'Coworking' : 'Sala de Reunião';
+  const spotLabel = `${sec} — ${label}`;
+  const outlookUrl = outlookLink(dk, spotLabel, bookingName, bookingNote||'');
+  const isFixed = bookingNote === 'Agenda fixa';
+  const cancelBtn = isOwn
+    ? `<button class="btn-cancel" onclick="closeModal();setTimeout(()=>askCancel('${k}','${esc(label)}','${dk}',${isRecur}),100)" style="padding:8px 16px;border-radius:var(--radius-md);font-size:13px;cursor:pointer;border:0.5px solid var(--red-border);background:var(--red-bg);color:var(--red-text);display:inline-flex;align-items:center;gap:5px"><i class="ti ti-trash" style="font-size:13px"></i> Cancelar reserva</button>`
+    : '';
+  showModal(`
+    <h3><i class="ti ti-armchair" style="font-size:18px;vertical-align:-3px;margin-right:6px"></i> ${esc(label)}</h3>
+    <p>
+      <strong>${esc(bookingName)}</strong>${bookingTeam?' · '+esc(bookingTeam):''}<br>
+      Data: <strong>${d}/${m}/${y}</strong><br>
+      ${bookingNote&&!isFixed?'Motivo: '+esc(bookingNote)+'<br>':''}
+      ${isFixed?'<span style="font-size:12px;background:var(--amber-bg);color:var(--amber-text);padding:2px 8px;border-radius:10px;display:inline-block;margin-top:4px"><i class="ti ti-pin" style="font-size:11px;vertical-align:-1px"></i> Agenda fixa</span>':''}
+    </p>
+    <div class="modal-btns" style="justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:1.25rem">
+      <a href="${outlookUrl}" target="_blank" rel="noopener" style="text-decoration:none">
+        <button class="btn-confirm" style="display:inline-flex;align-items:center;gap:6px"><i class="ti ti-calendar-event"></i> Salvar no Outlook</button>
+      </a>
+      <div style="display:flex;gap:8px">
+        ${cancelBtn}
+        <button onclick="closeModal()">Fechar</button>
+      </div>
+    </div>`);
+}
+
 // ── API helpers ──
 async function apiPost(spot_id, day_key, name, team, note, recurrent, rec_dow){
   try {
@@ -472,7 +537,12 @@ async function confirmBook(){
     const d=new Date(pendingAction.dk),dow=d.getDay()===0?6:d.getDay()-1;
     await apiPost(sid,'recurrent',pendingAction.me,pendingAction.team||'',note,true,dow);
   }
-  closeModal();showToast('Reserva confirmada!','#97C459');refresh();
+  showToast('Reserva confirmada!','#97C459');
+  const sid2=pendingAction.k.split('__')[1];
+  const sLabel=R_SPOTS.find(s=>s.id===sid2);
+  const spotLbl=sLabel?(sLabel.section==='cowork'?'Coworking — '+sLabel.label:'Sala de Reunião — '+sLabel.label):'posto';
+  showOutlookModal(pendingAction.dk, spotLbl, pendingAction.me, '');
+  refresh();
 }
 
 function askCancel(k,label,dk,isRecur){
@@ -527,7 +597,18 @@ async function confirmBookAllPick(){
   closeModal();
   let ok=0;
   for(const s of free){ if(await apiPost(s.id,dk,me,team||'',note,false,null)) ok++; }
-  showToast(`${ok} lugar${ok!==1?'es':''} reservado${ok!==1?'s':''}!`,'#97C459');refresh();
+  showToast(`${ok} lugar${ok!==1?'es':''} reservado${ok!==1?'s':''}!`,'#97C459');
+  const dk2=document.getElementById('bookall-day').value;
+  const [y2,m2,d2]=dk2.split('-');
+  showModal(`<h3><i class="ti ti-circle-check" style="font-size:18px;vertical-align:-3px;margin-right:6px;color:var(--implanta-blue)"></i> Reservas confirmadas!</h3>
+    <p>${ok} lugar${ok!==1?'es':''} em <strong>${d2}/${m2}/${y2}</strong></p>
+    <div class="modal-btns" style="justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:1.25rem">
+      <a href="${outlookLink(dk2,'Presencial Implanta',getName(),'')}" target="_blank" rel="noopener" style="text-decoration:none">
+        <button class="btn-confirm" style="display:inline-flex;align-items:center;gap:6px"><i class="ti ti-calendar-event"></i> Salvar no Outlook</button>
+      </a>
+      <button onclick="closeModal()">Fechar</button>
+    </div>`);
+  refresh();
 }
 async function confirmBookAll(){
   if(!pendingAction||pendingAction.type!=='bookall')return;
@@ -535,7 +616,17 @@ async function confirmBookAll(){
   closeModal();
   let ok=0;
   for(const s of pendingAction.free){ if(await apiPost(s.id,pendingAction.dk,pendingAction.me,pendingAction.team||'',note,false,null)) ok++; }
-  showToast(`${ok} lugares reservados!`,'#97C459');refresh();
+  showToast(`${ok} lugares reservados!`,'#97C459');
+  const [y3,m3,d3]=pendingAction.dk.split('-');
+  showModal(`<h3><i class="ti ti-circle-check" style="font-size:18px;vertical-align:-3px;margin-right:6px;color:var(--implanta-blue)"></i> Reservas confirmadas!</h3>
+    <p>${ok} lugar${ok!==1?'es':''} em <strong>${d3}/${m3}/${y3}</strong></p>
+    <div class="modal-btns" style="justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:1.25rem">
+      <a href="${outlookLink(pendingAction.dk,'Presencial Implanta',pendingAction.me,'')}" target="_blank" rel="noopener" style="text-decoration:none">
+        <button class="btn-confirm" style="display:inline-flex;align-items:center;gap:6px"><i class="ti ti-calendar-event"></i> Salvar no Outlook</button>
+      </a>
+      <button onclick="closeModal()">Fechar</button>
+    </div>`);
+  refresh();
 }
 
 function showMyReservations(){
