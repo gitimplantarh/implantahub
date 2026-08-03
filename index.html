@@ -4,72 +4,78 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Escritório Implanta — Goiânia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg:#ffffff;--bg-secondary:#f5f5f3;--bg-tertiary:#eeede9;
-      --text:#1a1a18;--text-secondary:#6b6b67;--text-tertiary:#9b9b97;
-      --border:rgba(0,0,0,0.12);--border-md:rgba(0,0,0,0.22);
-      --radius-md:8px;--radius-lg:12px;
-      --green-bg:#EAF3DE;--green-text:#27500A;--green-border:#97C459;
-      --red-bg:#FCEBEB;--red-text:#791F1F;--red-border:#F09595;
-      --blue-bg:#E6F1FB;--blue-text:#0C447C;--blue-border:#85B7EB;
-      --amber-bg:#FAEEDA;--amber-text:#633806;--amber-border:#EF9F27;
+      --implanta-blue:#0042B1;
+      --implanta-blue-light:#0099FF;
+      --implanta-green:#92F15B;
+      --implanta-black:#1D1D1B;
+      --implanta-gray:#9EA2A2;
+      --implanta-gray-light:#ECECEC;
+
+      --bg:#FFFFFF;
+      --bg-secondary:#F4F6FB;
+      --bg-tertiary:#EAF0FC;
+      --text:#1D1D1B;
+      --text-secondary:#4A5568;
+      --text-tertiary:#9EA2A2;
+      --border:rgba(0,66,177,0.12);
+      --border-md:rgba(0,66,177,0.22);
+      --radius-md:8px;
+      --radius-lg:12px;
+
+      --green-bg:#EDFCD8;--green-text:#2A6200;--green-border:#92F15B;
+      --red-bg:#FDECEA;--red-text:#B71C1C;--red-border:#EF9A9A;
+      --blue-bg:#E8EFFC;--blue-text:#0042B1;--blue-border:#0099FF;
+      --amber-bg:#FFF8E1;--amber-text:#6D4C00;--amber-border:#FFD54F;
     }
-    @media(prefers-color-scheme:dark){
-      :root{
-        --bg:#1c1c1a;--bg-secondary:#262624;--bg-tertiary:#2e2e2c;
-        --text:#f0efeb;--text-secondary:#a0a09c;--text-tertiary:#6b6b67;
-        --border:rgba(255,255,255,0.1);--border-md:rgba(255,255,255,0.2);
-        --green-bg:#173404;--green-text:#C0DD97;--green-border:#3B6D11;
-        --red-bg:#501313;--red-text:#F7C1C1;--red-border:#A32D2D;
-        --blue-bg:#042C53;--blue-text:#B5D4F4;--blue-border:#185FA5;
-        --amber-bg:#412402;--amber-text:#FAC775;--amber-border:#854F0B;
-      }
-    }
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg-tertiary);color:var(--text);min-height:100vh}
-    .page{max-width:1020px;margin:0 auto;padding:2rem 1.25rem 4rem}
+    body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg-tertiary);color:var(--text);min-height:100vh}
+    .page{max-width:1020px;margin:0 auto;padding:0 0 4rem;background:var(--bg);border-radius:0 0 16px 16px;min-height:100vh}
 
     /* ── Topbar ── */
-    .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:12px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:0;flex-wrap:wrap;gap:12px;background:var(--bg);padding:1rem 1.25rem;border-radius:0;border-bottom:2px solid var(--implanta-blue)}
     .logo{display:flex;align-items:center;gap:10px}
     .logo-mark{width:36px;height:36px;background:#1a1a18;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px}
     @media(prefers-color-scheme:dark){.logo-mark{background:#f0efeb;color:#1a1a18}}
-    .logo-text{font-size:16px;font-weight:500}
+    .logo-text{font-size:16px;font-weight:600;color:var(--implanta-blue)}
     .logo-sub{font-size:12px;color:var(--text-secondary)}
-    .nav-group{display:flex;align-items:center;gap:6px;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:4px}
-    .nav-group button{background:none;border:none;border-radius:var(--radius-md);padding:6px 12px;cursor:pointer;font-size:13px;color:var(--text-secondary);transition:background .15s,color .15s}
-    .nav-group button:hover{background:var(--bg-secondary);color:var(--text)}
-    .week-label{font-size:13px;font-weight:500;color:var(--text);min-width:156px;text-align:center}
+    .nav-group{display:flex;align-items:center;gap:6px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius-lg);padding:4px}
+    .nav-group button{background:none;border:none;border-radius:var(--radius-md);padding:6px 12px;cursor:pointer;font-size:13px;color:var(--implanta-blue);transition:background .15s,color .15s;font-family:inherit;font-weight:500}
+    .nav-group button:hover{background:var(--bg-tertiary);color:var(--implanta-blue)}
+    .week-label{font-size:13px;font-weight:500;color:var(--implanta-blue);min-width:156px;text-align:center}
 
     /* ── Tabs ── */
-    .tab-bar{display:flex;gap:4px;margin-bottom:1.5rem;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:4px;width:fit-content}
-    .tab-btn{padding:8px 20px;border-radius:var(--radius-md);border:none;background:none;font-size:14px;font-weight:500;color:var(--text-secondary);cursor:pointer;transition:background .15s,color .15s}
-    .tab-btn:hover{background:var(--bg-secondary);color:var(--text)}
-    .tab-btn.active{background:var(--bg-tertiary);color:var(--text)}
+    .tab-bar{display:flex;gap:0;margin-bottom:0;background:var(--bg);border:none;border-radius:0;padding:0 1.25rem;width:100%;border-bottom:1px solid var(--border)}
+    .tab-btn{padding:12px 20px;border-radius:0;border:none;background:none;font-size:13px;font-weight:500;color:var(--text-secondary);cursor:pointer;transition:all .15s;border-bottom:2px solid transparent;font-family:inherit}
+    .tab-btn:hover{background:var(--bg-secondary);color:var(--implanta-blue);border-bottom-color:var(--border-md)}
+    .tab-btn.active{background:none;color:var(--implanta-blue);font-weight:600;border-bottom-color:var(--implanta-blue)}
     .tab-panel{display:none}
     .tab-panel.active{display:block}
 
     /* ── Cards & shared ── */
-    .card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.25rem}
+    .card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.25rem;box-shadow:0 1px 4px rgba(0,66,177,0.06)}
     .card-title{font-size:11px;font-weight:500;color:var(--text-tertiary);margin-bottom:1rem;text-transform:uppercase;letter-spacing:.05em}
     .fields{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
     .field{display:flex;flex-direction:column;gap:4px}
     .field label{font-size:12px;color:var(--text-secondary)}
     .field input{padding:8px 12px;border:0.5px solid var(--border-md);border-radius:var(--radius-md);font-size:14px;background:var(--bg-secondary);color:var(--text);width:190px;outline:none;transition:border-color .15s}
-    .field input:focus{border-color:#378ADD}
+    .field input:focus{border-color:var(--implanta-blue-light);box-shadow:0 0 0 3px rgba(0,153,255,0.12)}
     .action-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:1rem;padding-top:1rem;border-top:0.5px solid var(--border)}
     .action-bar .hint{font-size:12px;color:var(--text-tertiary);margin-left:auto}
     .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius-md);font-size:13px;cursor:pointer;border:0.5px solid var(--border-md);background:var(--bg-secondary);color:var(--text);transition:opacity .15s;white-space:nowrap}
     .btn:hover{opacity:.75}
-    .btn-green{background:var(--green-bg);color:var(--green-text);border-color:var(--green-border)}
+    .btn-green{background:var(--implanta-green);color:var(--implanta-black);border-color:var(--implanta-green);font-weight:600}
     .btn-red{background:var(--red-bg);color:var(--red-text);border-color:var(--red-border)}
-    .btn-blue{background:var(--blue-bg);color:var(--blue-text);border-color:var(--blue-border)}
-    .btn-amber{background:var(--amber-bg);color:var(--amber-text);border-color:var(--amber-border)}
+    .btn-blue{background:var(--blue-bg);color:var(--implanta-blue);border-color:var(--implanta-blue-light);font-weight:500}
+    .btn-amber{background:var(--implanta-blue);color:#fff;border-color:var(--implanta-blue);font-weight:500}
 
     /* ── Stats (reservas) ── */
     .r-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.25rem}
-    .r-stat{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem}
+    .r-stat{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem;box-shadow:0 1px 3px rgba(0,66,177,0.06)}
     .r-stat-val{font-size:24px;font-weight:500;line-height:1;margin-bottom:4px}
     .r-stat-lbl{font-size:12px;color:var(--text-secondary)}
 
@@ -80,12 +86,12 @@
     .cal-grid>*:nth-child(6n){border-right:none}
     .r-cell-corner{background:var(--bg-secondary)}
     .r-cell-header{background:var(--bg-secondary);padding:10px 6px;font-size:12px;font-weight:500;color:var(--text);text-align:center}
-    .r-cell-header.today{background:var(--blue-bg);color:var(--blue-text)}
+    .r-cell-header.today{background:var(--implanta-blue);color:#FFFFFF}
     .r-cell-row-label{background:var(--bg-secondary);font-size:11px;color:var(--text-secondary);display:flex;align-items:center;padding:0 0 0 10px}
-    .r-section-bar{grid-column:1/-1;background:var(--bg-secondary);padding:6px 12px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--text-tertiary);border-right:none!important}
+    .r-section-bar{grid-column:1/-1;background:var(--implanta-blue);padding:7px 12px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#fff;border-right:none!important}
     .r-cell-day-actions{padding:4px 4px 2px;display:flex;flex-direction:column;gap:2px}
-    .r-book-all-btn{width:100%;padding:3px 4px;font-size:10px;background:none;border:0.5px dashed var(--border-md);border-radius:5px;color:var(--text-tertiary);cursor:pointer;transition:background .15s,color .15s}
-    .r-book-all-btn:hover{background:var(--blue-bg);color:var(--blue-text);border-color:var(--blue-border)}
+    .r-book-all-btn{width:100%;padding:3px 4px;font-size:10px;background:none;border:0.5px dashed rgba(0,153,255,0.4);border-radius:5px;color:var(--implanta-blue-light);cursor:pointer;transition:background .15s,color .15s}
+    .r-book-all-btn:hover{background:var(--implanta-blue);color:#fff;border-color:var(--implanta-blue)}
     .r-cell-spot{padding:3px 4px;text-align:center}
     .chair-btn{width:100%;padding:3px 2px;cursor:pointer;border-radius:6px;border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:1px;transition:background .12s}
     .chair-btn:hover:not(:disabled){background:var(--bg-tertiary)}
@@ -125,7 +131,7 @@
     .modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem}
     .modal-btns button{padding:8px 18px;border-radius:var(--radius-md);font-size:13px;cursor:pointer;border:0.5px solid var(--border-md);background:var(--bg-secondary);color:var(--text);transition:opacity .15s}
     .modal-btns button:hover{opacity:.8}
-    .modal-btns .btn-confirm{background:var(--green-bg);color:var(--green-text);border-color:var(--green-border)}
+    .modal-btns .btn-confirm{background:var(--implanta-green);color:var(--implanta-black);border-color:var(--implanta-green);font-weight:600}
     .modal-btns .btn-cancel{background:var(--red-bg);color:var(--red-text);border-color:var(--red-border)}
     .warn-box{background:var(--red-bg);border:0.5px solid var(--red-border);border-radius:var(--radius-md);padding:8px 12px;font-size:12px;color:var(--red-text);margin-bottom:1rem;display:none;line-height:1.6}
     .warn-box.show{display:block}
@@ -167,7 +173,7 @@
     .ag-cov-person.ok{background:#EAF3DE;color:#27500A}
     .ag-badge{font-size:10px;padding:2px 6px;border-radius:10px;font-weight:500}
     .ag-badge.ok{background:#C0DD97;color:#27500A}
-    .ag-fixed-note{background:var(--blue-bg);border:0.5px solid var(--blue-border);border-radius:var(--radius-md);padding:8px 12px;font-size:12px;color:var(--blue-text);margin-bottom:1.25rem}
+    .ag-fixed-note{background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius-md);padding:10px 14px;font-size:12px;color:var(--text-secondary);margin-bottom:1.25rem}
 
     @media(max-width:640px){
       .cal-grid{grid-template-columns:68px repeat(5,1fr)}
@@ -183,26 +189,27 @@
   <!-- topbar -->
   <div class="topbar">
     <div class="logo">
-      <div class="logo-mark">🏢</div>
+      <div class="logo-mark" style="background:var(--implanta-blue);width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="color:#fff;font-weight:700;font-size:15px;letter-spacing:-0.5px">I</span></div>
       <div>
         <div class="logo-text">Implanta IT Solutions</div>
         <div class="logo-sub">Escritório Goiânia</div>
       </div>
     </div>
     <div class="nav-group" id="res-nav">
-      <button onclick="changeWeek(-1)" aria-label="Semana anterior">&#8249;</button>
+      <button onclick="changeWeek(-1)" aria-label="Semana anterior"><i class="ti ti-chevron-left"></i></button>
       <span class="week-label" id="week-label"></span>
-      <button onclick="changeWeek(1)" aria-label="Próxima semana">&#8250;</button>
+      <button onclick="changeWeek(1)" aria-label="Próxima semana"><i class="ti ti-chevron-right"></i></button>
       <button onclick="goToday()">Hoje</button>
+      <button onclick="toggleVisaoMensal(this)" id="btn-visao" style="display:inline-flex;align-items:center;gap:5px"><i class="ti ti-calendar-month" style="font-size:14px;vertical-align:-2px;margin-right:5px"></i> Visão mensal</button>
     </div>
   </div>
 
   <!-- tabs -->
   <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('reservas',this)">🪑 Reservar posto</button>
-    <button class="tab-btn" onclick="switchTab('agenda',this)">📅 Agenda fixa</button>
+    <button class="tab-btn active" onclick="switchTab('reservas',this);document.getElementById('btn-visao').style.background='';document.getElementById('btn-visao').style.color=''"><i class="ti ti-armchair" style="font-size:20px"></i> Reservar posto</button>
   </div>
 
+  <div style="padding:1.5rem 1.25rem 0" id="content-area">
   <!-- ══════ TAB RESERVAS ══════ -->
   <div class="tab-panel active" id="tab-reservas">
 
@@ -213,10 +220,10 @@
         <div class="field"><label for="userteam">Time</label><input type="text" id="userteam" placeholder="ex: Time Azul, Time Vermelho..." autocomplete="off"></div>
       </div>
       <div class="action-bar">
-        <button class="btn btn-blue" onclick="showMyReservations()">&#9776; Minhas reservas</button>
-        <button class="btn btn-amber" onclick="askBookAllModal('cowork')">&#128187; Reservar coworking</button>
-        <button class="btn btn-amber" onclick="askBookAllModal('sala')">&#128196; Reservar sala de reunião</button>
-        <button class="btn" onclick="askBookAllModal('all')">&#128197; Reservar espaço inteiro</button>
+        <button class="btn btn-blue" onclick="showMyReservations()"><i class="ti ti-list"></i> Minhas reservas</button>
+        <button class="btn btn-amber" onclick="askBookAllModal('cowork')"><i class="ti ti-device-desktop"></i> Reservar coworking</button>
+        <button class="btn btn-amber" onclick="askBookAllModal('sala')"><i class="ti ti-door"></i> Reservar sala de reunião</button>
+        <button class="btn" onclick="askBookAllModal('all')"><i class="ti ti-calendar-event"></i> Reservar espaço inteiro</button>
         <span class="hint" id="limit-hint"></span>
       </div>
     </div>
@@ -243,7 +250,7 @@
   <div class="tab-panel" id="tab-agenda">
 
     <div class="ag-fixed-note">
-      📌 <strong>Grade fixa mensal:</strong> cada time tem seu dia garantido todo mês. Qui e Sex reservados para treinamentos e reuniões de gestão com Rômulo.
+      <i class="ti ti-calendar" style="font-size:14px;vertical-align:-2px;margin-right:5px"></i> <strong>Visão mensal do escritório:</strong> mostra as reservas reais do banco. Qualquer alteração feita nas reservas aparece aqui automaticamente.
     </div>
 
     <div class="ag-controls">
@@ -272,6 +279,7 @@
 
   </div><!-- /tab-agenda -->
 
+</div><!-- /content-area -->
 </div><!-- /page -->
 
 <div id="toast"></div>
@@ -285,9 +293,28 @@ function switchTab(name, btn) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-  btn.classList.add('active');
-  document.getElementById('res-nav').style.display = name === 'reservas' ? 'flex' : 'none';
-  if (name === 'agenda') agBuild();
+  if(btn) btn.classList.add('active');
+}
+
+function toggleVisaoMensal(btn){
+  const panel = document.getElementById('tab-agenda');
+  const reservas = document.getElementById('tab-reservas');
+  const isOpen = panel.classList.contains('active');
+  if(isOpen){
+    panel.classList.remove('active');
+    reservas.classList.add('active');
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelector('.tab-btn').classList.add('active');
+    btn.style.background='';
+    btn.style.color='';
+  } else {
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    panel.classList.add('active');
+    btn.style.background='var(--bg-tertiary)';
+    btn.style.color='var(--text)';
+    agBuild();
+  }
 }
 
 // ════════════════════════════════════════════
@@ -375,7 +402,7 @@ function render(){
   });
   let lastSec='';
   R_SPOTS.forEach(spot=>{
-    if(spot.section!==lastSec){const lbl=spot.section==='cowork'?'🖥 Coworking (3 postos)':'🪑 Sala de reunião (9 lugares)';h+=`<div class="r-section-bar">${lbl}</div>`;lastSec=spot.section;}
+    if(spot.section!==lastSec){const lbl=spot.section==='cowork'?'<i class="ti ti-device-desktop" style="font-size:11px;vertical-align:-1px"></i> Coworking (3 postos)':'<i class="ti ti-armchair" style="font-size:11px;vertical-align:-1px"></i> Sala de reunião (9 lugares)';h+=`<div class="r-section-bar">${lbl}</div>`;lastSec=spot.section;}
     h+=`<div class="r-cell-row-label">${spot.label}</div>`;
     dates.forEach(d=>{
       const dk=dKey(d),k=bKey(dk,spot.id),b=getEffBooking(dk,spot.id),past=isPast(d);
@@ -410,7 +437,7 @@ function askBook(k,label,dk){
   const[y,m,d]=dk.split('-');const already=countMyDay(dk);
   const warn=already>=1?`<p style="color:var(--amber-text);font-size:13px">&#9888; Você já tem ${already} reserva${already>1?'s':''} neste dia.</p>`:'';
   pendingAction={type:'book',k,me,team,dk};
-  showModal(`<h3>&#128197; Reservar lugar</h3><p><strong>${esc(label)}</strong> · ${d}/${m}/${y}</p>${warn}
+  showModal(`<h3><i class="ti ti-calendar-plus" style="font-size:18px;vertical-align:-2px;margin-right:6px"></i>Reservar lugar</h3><p><strong>${esc(label)}</strong> · ${d}/${m}/${y}</p>${warn}
     <div class="modal-field"><label>Motivo / observação <span style="color:var(--text-tertiary)">(opcional)</span></label><textarea id="book-note" placeholder="ex: reunião com cliente, foco..."></textarea></div>
     <label class="modal-check"><input type="checkbox" id="book-recur"> Repetir toda semana neste mesmo lugar e dia</label>
     <div class="modal-btns"><button onclick="closeModal()">Cancelar</button><button class="btn-confirm" onclick="confirmBook()">Confirmar reserva</button></div>`);
@@ -450,13 +477,13 @@ async function confirmBook(){
 
 function askCancel(k,label,dk,isRecur){
   pendingAction={type:'cancel',k,dk,isRecur};
-  if(isRecur){showModal(`<h3>&#128465; Cancelar reserva recorrente</h3><p>Reserva recorrente em <strong>${esc(label)}</strong>. O que deseja cancelar?</p>
+  if(isRecur){showModal(`<h3><i class="ti ti-trash" style="font-size:18px;vertical-align:-2px;margin-right:6px"></i>Cancelar reserva recorrente</h3><p>Reserva recorrente em <strong>${esc(label)}</strong>. O que deseja cancelar?</p>
     <div class="modal-btns" style="flex-direction:column;align-items:stretch;gap:8px">
       <button class="btn-cancel" style="padding:10px 16px;border-radius:var(--radius-md);font-size:13px;cursor:pointer;border:0.5px solid var(--red-border);background:var(--red-bg);color:var(--red-text)" onclick="confirmCancel('only')"><strong>Somente este dia</strong> — ${fmtFull(dk)}</button>
       <button class="btn-cancel" style="padding:10px 16px;border-radius:var(--radius-md);font-size:13px;cursor:pointer;border:0.5px solid var(--red-border);background:var(--red-bg);color:var(--red-text)" onclick="confirmCancel('all')"><strong>Todas as repetições</strong></button>
       <button onclick="closeModal()" style="padding:10px 16px;border-radius:var(--radius-md);font-size:13px;cursor:pointer;border:0.5px solid var(--border-md);background:var(--bg-secondary);color:var(--text)">Manter reserva</button>
     </div>`);}
-  else{showModal(`<h3>&#128465; Cancelar reserva</h3><p>Cancelar reserva em <strong>${esc(label)}</strong> no dia <strong>${fmtFull(dk)}</strong>?</p>
+  else{showModal(`<h3><i class="ti ti-trash" style="font-size:18px;vertical-align:-2px;margin-right:6px"></i>Cancelar reserva</h3><p>Cancelar reserva em <strong>${esc(label)}</strong> no dia <strong>${fmtFull(dk)}</strong>?</p>
     <div class="modal-btns"><button onclick="closeModal()">Manter</button><button class="btn-cancel" onclick="confirmCancel('only')">Cancelar reserva</button></div>`);}
 }
 async function confirmCancel(scope){
@@ -518,98 +545,154 @@ function showMyReservations(){
   const seen=new Set();const deduped=future.filter(r=>{const k=r.b.recurrent?`rec__${r.d.getDay()}__${r.spot.id}`:bKey(r.dk,r.spot.id);if(seen.has(k))return false;seen.add(k);return true;});
   let list='';
   if(deduped.length===0){list='<p class="res-empty">Nenhuma reserva futura.</p>';}
-  else{list=deduped.slice(0,20).map(r=>{const label=r.b.recurrent?`↻ toda ${['segunda','terça','quarta','quinta','sexta'][r.d.getDay()===0?6:r.d.getDay()-1]}`:fmtFull(r.dk);const ck=bKey(r.dk,r.spot.id);return`<div class="res-item"><div style="font-size:20px">🪑</div><div class="res-item-info"><div class="res-item-date">${label}</div><div class="res-item-spot">${r.spot.section==='cowork'?'Coworking':'Sala'} · ${r.spot.label}${r.b.note?' · '+esc(r.b.note):''}</div></div><button class="res-item-cancel" onclick="closeModal();setTimeout(()=>askCancel('${ck}','${esc(r.spot.label)}','${r.dk}',${r.b.recurrent?'true':'false'}),100)">✕ Cancelar</button></div>`;}).join('');}
-  showModal(`<h3>&#9776; Minhas reservas — ${esc(me)}</h3><div style="max-height:340px;overflow-y:auto">${list}</div><div class="modal-btns" style="margin-top:1rem"><button onclick="closeModal()">Fechar</button></div>`);
+  else{list=deduped.slice(0,20).map(r=>{const label=r.b.recurrent?`↻ toda ${['segunda','terça','quarta','quinta','sexta'][r.d.getDay()===0?6:r.d.getDay()-1]}`:fmtFull(r.dk);const ck=bKey(r.dk,r.spot.id);return`<div class="res-item"><div style="font-size:20px"><i class="ti ti-armchair" style="font-size:20px"></i></div><div class="res-item-info"><div class="res-item-date">${label}</div><div class="res-item-spot">${r.spot.section==='cowork'?'Coworking':'Sala'} · ${r.spot.label}${r.b.note?' · '+esc(r.b.note):''}</div></div><button class="res-item-cancel" onclick="closeModal();setTimeout(()=>askCancel('${ck}','${esc(r.spot.label)}','${r.dk}',${r.b.recurrent?'true':'false'}),100)"><i class="ti ti-x" style="font-size:12px"></i> Cancelar</button></div>`;}).join('');}
+  showModal(`<h3><i class="ti ti-list"></i> Minhas reservas — ${esc(me)}</h3><div style="max-height:340px;overflow-y:auto">${list}</div><div class="modal-btns" style="margin-top:1rem"><button onclick="closeModal()">Fechar</button></div>`);
 }
 
 
 // ════════════════════════════════════════════
 // AGENDA FIXA
 // ════════════════════════════════════════════
-const AG_FIXED_GRID = [
-  {week:0,day:0,teams:['titanio']},
-  {week:0,day:1,teams:['magenta']},
-  {week:0,day:2,teams:['laranja','violeta']},
-  {week:1,day:0,teams:['azul']},
-  {week:1,day:1,teams:['prata','amarelo']},
-  {week:1,day:2,teams:['vermelho','safira']},
-  {week:2,day:0,teams:['turquesa']},
-  {week:2,day:1,teams:['salmao']},
-  {week:2,day:2,teams:['sepia']},
-  {week:3,day:0,teams:['jade','grena']},
-  {week:3,day:1,teams:['rubi']},
-];
-const AG_TEAMS = {
-  titanio: {label:'Time Titânio', color:'#C0DD97',text:'#27500A',border:'#97C459', people:['João Pedro Morgado','Lucas Guimarães','Lorena Morais','Milton Divino']},
-  magenta: {label:'Time Magenta', color:'#B5D4F4',text:'#0C447C',border:'#85B7EB', people:['Guilherme Soares','Isadora Campos','João Luiz Castelo','Paulo Otávio']},
-  laranja: {label:'Time Laranja', color:'#B5D4F4',text:'#0C447C',border:'#85B7EB', people:['Raphael Cardoso','Ewersson Pimentel']},
-  violeta: {label:'Time Violeta', color:'#B5D4F4',text:'#0C447C',border:'#85B7EB', people:['Leonardo Xavier','Marcelo Henrique']},
-  amarelo: {label:'Time Amarelo', color:'#B5D4F4',text:'#0C447C',border:'#85B7EB', people:['Augusto Meneses']},
-  azul:    {label:'Time Azul',    color:'#B5D4F4',text:'#0C447C',border:'#85B7EB', people:['Adson Luiz','Arthur Prado','Igor Henrique','Paola Leandro','Tatiane Arantes']},
-  prata:   {label:'Time Prata',   color:'#B5D4F4',text:'#0C447C',border:'#85B7EB', people:['Gustavo Alves','Ivan Lessa','Mateus Souza','Sandra Garcez']},
-  vermelho:{label:'Time Vermelho',color:'#B5D4F4',text:'#0C447C',border:'#85B7EB', people:['Rúbia Renata','Thiago Corrêa']},
-  safira:  {label:'Time Safira',  color:'#B5D4F4',text:'#0C447C',border:'#85B7EB', people:['Augusto Barreto','Dyovana Kerly','Vitor Tavares']},
-  turquesa:{label:'Time Turquesa',color:'#F09595',text:'#791F1F',border:'#E24B4A', people:['Larissa Ramos','Gabriel Serejo','Mateus Fidelis','Bruno Jaime']},
-  salmao:  {label:'Time Salmão',  color:'#FAC775',text:'#633806',border:'#EF9F27', people:['Fábio Junio','Rafael Galdino','Vinicius Brandão','Mariana Marques']},
-  sepia:   {label:'Time Sépia',   color:'#F09595',text:'#791F1F',border:'#E24B4A', people:['Allan Wanderson','André Luiz','Edvaldo Jose','Lucas Brito','Marcos Paulo','Raphael Mota']},
-  jade:    {label:'Time Jade',    color:'#FAC775',text:'#633806',border:'#EF9F27', people:['Cecília','Caroliny Silva','Stefânia Rodrigues']},
-  grena:   {label:'Time Grená',   color:'#FAC775',text:'#633806',border:'#EF9F27', people:['Vitória Mugayar']},
-  rubi:    {label:'Time Rubi',    color:'#FAC775',text:'#633806',border:'#EF9F27', people:['Marco Túlio','Daniella Dias','Isabelly Silva']},
-};
-const AG_DAYS  = ['Segunda','Terça','Quarta'];
-const AG_MONTHS= ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-const AG_CAP   = 12;
+// ════════════════════════════════════════════
+// VISÃO MENSAL — lê do banco
+// ════════════════════════════════════════════
+const AG_DAYS   = ['Segunda','Terça','Quarta'];
+const AG_MONTHS = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const AG_CAP    = 12;
+const SPOT_SECTION = (sid) => sid.startsWith('c') ? 'Coworking' : 'Sala de Reunião';
 
 function agP2(n){return String(n).padStart(2,'0');}
+
+function agGetMonthRange(mo){
+  const base = new Date(2026, 6+mo, 1);
+  const last = new Date(base.getFullYear(), base.getMonth()+1, 0);
+  return {
+    from: `${base.getFullYear()}-${agP2(base.getMonth()+1)}-01`,
+    to:   `${last.getFullYear()}-${agP2(last.getMonth()+1)}-${agP2(last.getDate())}`,
+    base, last
+  };
+}
+
 function agGetWeeks(mo){
-  const base=new Date(2026,6+mo,1),weeks=[];let d=new Date(base);
-  const fd=d.getDay(),diff=fd===1?0:fd===0?1:8-fd;
-  if(diff>0)d.setDate(d.getDate()+diff);
+  const {base} = agGetMonthRange(mo);
+  const weeks = [];
+  let d = new Date(base);
+  const fd = d.getDay(), diff = fd===1?0:fd===0?1:8-fd;
+  if(diff>0) d.setDate(d.getDate()+diff);
   for(let w=0;w<4;w++){
-    if(d.getMonth()!==base.getMonth())break;
-    const mon=new Date(d),fri=new Date(d);fri.setDate(fri.getDate()+4);
-    const end=fri.getMonth()!==base.getMonth()?new Date(base.getFullYear(),base.getMonth()+1,0):fri;
-    const dayDates=AG_DAYS.map((_,i)=>{const dd=new Date(mon);dd.setDate(mon.getDate()+i);return`${agP2(dd.getDate())}/${agP2(dd.getMonth()+1)}`;});
-    weeks.push({label:`Semana ${w+1}`,dates:`${agP2(mon.getDate())}/${agP2(mon.getMonth()+1)} a ${agP2(end.getDate())}/${agP2(end.getMonth()+1)}`,dayDates});
+    if(d.getMonth()!==base.getMonth()) break;
+    const mon = new Date(d), fri = new Date(d); fri.setDate(fri.getDate()+4);
+    const end = fri.getMonth()!==base.getMonth()?new Date(base.getFullYear(),base.getMonth()+1,0):fri;
+    const dayDates = AG_DAYS.map((_,i)=>{
+      const dd=new Date(mon); dd.setDate(mon.getDate()+i);
+      return { label:`${agP2(dd.getDate())}/${agP2(dd.getMonth()+1)}`, iso: dd.toISOString().slice(0,10) };
+    });
+    weeks.push({
+      label:`Semana ${w+1}`,
+      dates:`${agP2(mon.getDate())}/${agP2(mon.getMonth()+1)} a ${agP2(end.getDate())}/${agP2(end.getMonth()+1)}`,
+      dayDates
+    });
     d.setDate(d.getDate()+7);
   }
-  while(weeks.length<4)weeks.push({label:`Semana ${weeks.length+1}`,dates:'—',dayDates:['—','—','—']});
+  while(weeks.length<4) weeks.push({label:`Semana ${weeks.length+1}`,dates:'—',dayDates:[{label:'—',iso:''},{label:'—',iso:''},{label:'—',iso:''}]});
   return weeks;
 }
-function agBuildSched(){
-  const sched=Array.from({length:4},()=>Array.from({length:3},()=>({teams:[],count:0})));
-  AG_FIXED_GRID.forEach(slot=>{slot.teams.forEach(tid=>{const t=AG_TEAMS[tid];sched[slot.week][slot.day].teams.push({id:tid,...t});sched[slot.week][slot.day].count+=t.people.length;});});
-  return sched;
-}
+
 function agCapColor(c){const p=c/AG_CAP;return p>1?'#E24B4A':p>0.75?'#EF9F27':'#97C459';}
 
-function agBuild(){
-  const mo=parseInt(document.getElementById('ag-sel-month').value);
-  const weeks=agGetWeeks(mo),sched=agBuildSched();
-  agRenderGrid(weeks,sched,AG_MONTHS[6+mo]);
-  agRenderStats(sched);
-  agRenderCoverage(sched);
+// Build schedule from raw DB rows
+function agBuildSchedFromRows(rows, weeks){
+  // sched[wi][di] = { people: [{name,team,spot_id}], count }
+  const sched = Array.from({length:4},()=>Array.from({length:3},()=>({people:[],count:0})));
+  const isoMap = {}; // iso date -> {wi, di}
+  weeks.forEach((wk,wi)=>{
+    wk.dayDates.forEach((dd,di)=>{ if(dd.iso) isoMap[dd.iso]={wi,di}; });
+  });
+  rows.forEach(b=>{
+    const slot = isoMap[b.day_key];
+    if(!slot) return;
+    sched[slot.wi][slot.di].people.push(b);
+    sched[slot.wi][slot.di].count++;
+  });
+  return sched;
 }
 
-function agRenderGrid(weeks,sched,monthName){
-  let h=`<div style="padding:10px 14px;background:var(--bg-secondary);border-bottom:1px solid var(--border);font-size:13px;font-weight:500;color:var(--text-secondary)">${monthName} 2026 · máx. ${AG_CAP} pessoas/dia · Qui e Sex travados</div>`;
+// Group people by team within a slot
+function agGroupByTeam(people){
+  const teams = {};
+  people.forEach(p=>{
+    const key = p.team||'Sem time';
+    if(!teams[key]) teams[key]={label:key, people:[]};
+    teams[key].people.push(p.name);
+  });
+  return Object.values(teams);
+}
+
+// Assign color by team name
+function agTeamColor(teamName){
+  const map = {
+    'Time Titânio':  {color:'#C0DD97',text:'#27500A',border:'#97C459'},
+    'Time Magenta':  {color:'#B5D4F4',text:'#0C447C',border:'#85B7EB'},
+    'Time Laranja':  {color:'#B5D4F4',text:'#0C447C',border:'#85B7EB'},
+    'Time Violeta':  {color:'#B5D4F4',text:'#0C447C',border:'#85B7EB'},
+    'Time Amarelo':  {color:'#B5D4F4',text:'#0C447C',border:'#85B7EB'},
+    'Time Azul':     {color:'#B5D4F4',text:'#0C447C',border:'#85B7EB'},
+    'Time Prata':    {color:'#B5D4F4',text:'#0C447C',border:'#85B7EB'},
+    'Time Vermelho': {color:'#B5D4F4',text:'#0C447C',border:'#85B7EB'},
+    'Time Safira':   {color:'#B5D4F4',text:'#0C447C',border:'#85B7EB'},
+    'Time Turquesa': {color:'#F09595',text:'#791F1F',border:'#E24B4A'},
+    'Time Salmão':   {color:'#FAC775',text:'#633806',border:'#EF9F27'},
+    'Time Sépia':    {color:'#F09595',text:'#791F1F',border:'#E24B4A'},
+    'Time Jade':     {color:'#FAC775',text:'#633806',border:'#EF9F27'},
+    'Time Grená':    {color:'#FAC775',text:'#633806',border:'#EF9F27'},
+    'Time Rubi':     {color:'#FAC775',text:'#633806',border:'#EF9F27'},
+  };
+  return map[teamName]||{color:'#E8E6E0',text:'#4a4a46',border:'#C8C6BE'};
+}
+
+async function agBuild(){
+  const mo = parseInt(document.getElementById('ag-sel-month').value);
+  const {from, to} = agGetMonthRange(mo);
+  const weeks = agGetWeeks(mo);
+  document.getElementById('ag-calendar').innerHTML='<div style="padding:2rem;text-align:center;color:var(--text-tertiary);font-size:13px">Carregando...</div>';
+  document.getElementById('ag-stats').innerHTML='';
+  document.getElementById('ag-coverage').innerHTML='';
+  try {
+    const res = await fetch(`/api/bookings?from=${from}&to=${to}`);
+    if(!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    const rows = Array.isArray(data)?data:data.rows||data.bookings||data.data||[];
+    const sched = agBuildSchedFromRows(rows, weeks);
+    agRenderGrid(weeks, sched, AG_MONTHS[6+mo]);
+    agRenderStats(sched, rows);
+    agRenderCoverage(rows);
+  } catch(e){
+    document.getElementById('ag-calendar').innerHTML=`<div style="padding:2rem;text-align:center;color:var(--red-text);font-size:13px">❌ Erro ao carregar: ${e.message}</div>`;
+  }
+}
+
+function agRenderGrid(weeks, sched, monthName){
+  let h=`<div style="padding:10px 14px;background:var(--bg-secondary);border-bottom:1px solid var(--border);font-size:13px;font-weight:500;color:var(--text-secondary)">${monthName} 2026 · Qui e Sex reservados para treinamentos e reuniões</div>`;
   h+='<div class="ag-grid">';
   h+='<div class="ag-ch"></div>';
   AG_DAYS.forEach(d=>{h+=`<div class="ag-ch">${d}</div>`;});
   weeks.forEach((wk,wi)=>{
     h+=`<div class="ag-rl"><span>${wk.label}</span><span class="dates">${wk.dates}</span></div>`;
     AG_DAYS.forEach((_,di)=>{
-      const slot=sched[wi]?.[di],isEmpty=!slot||slot.count===0;
+      const slot=sched[wi][di], isEmpty=slot.count===0;
+      const dateLabel = wk.dayDates[di].label;
       h+=`<div class="ag-cell${isEmpty?' empty':''}">`;
-      h+=`<div class="ag-date-lbl">${wk.dayDates[di]}</div>`;
+      h+=`<div class="ag-date-lbl" style="font-size:10px;font-weight:500;color:var(--text-secondary);margin-bottom:5px">${dateLabel}</div>`;
       if(!isEmpty){
         const pct=Math.min(slot.count/AG_CAP*100,100);
         h+=`<div class="ag-cap-txt"><span>${slot.count} pessoa${slot.count!==1?'s':''}</span><span style="color:${agCapColor(slot.count)}">${slot.count}/${AG_CAP}</span></div>`;
         h+=`<div class="ag-cap-bar"><div class="ag-cap-fill" style="width:${pct}%;background:${agCapColor(slot.count)}"></div></div>`;
-        slot.teams.forEach(t=>{
-          h+=`<div class="ag-team-block"><div class="ag-team-header" style="background:${t.color};color:${t.text}">${t.label}<span style="font-size:9px;opacity:.75;margin-left:4px">${t.people.length}p</span></div>`;
+        const groups = agGroupByTeam(slot.people);
+        groups.forEach(g=>{
+          const c = agTeamColor(g.label);
+          h+=`<div class="ag-team-block"><div class="ag-team-header" style="background:${c.color};color:${c.text}">${g.label}<span style="font-size:9px;opacity:.75;margin-left:4px">${g.people.length}p</span></div>`;
           h+=`<div class="ag-team-people">`;
-          t.people.forEach(p=>{h+=`<div class="ag-person"><span class="bullet" style="background:${t.border}"></span>${p}</div>`;});
+          g.people.forEach(p=>{h+=`<div class="ag-person"><span class="bullet" style="background:${c.border}"></span>${p}</div>`;});
           h+=`</div></div>`;
         });
       } else {
@@ -620,29 +703,41 @@ function agRenderGrid(weeks,sched,monthName){
   });
   ['Quinta','Sexta'].forEach((day,i)=>{
     h+=`<div class="ag-ch locked">${day}</div>`;
-    const labels=['📋 Treinamentos','👥 Reuniões de Gestão / Rômulo'];
+    const labels=['<i class="ti ti-presentation" style="font-size:12px;vertical-align:-2px"></i> Treinamentos','<i class="ti ti-users" style="font-size:12px;vertical-align:-2px"></i> Reuniões de Gestão / Rômulo'];
     for(let w=0;w<4;w++)h+=`<div class="ag-cell locked"><div class="ag-locked-label">${labels[i]}</div></div>`;
   });
   h+='</div>';
   document.getElementById('ag-calendar').innerHTML=h;
 }
 
-function agRenderStats(sched){
-  const present=new Set();let maxDay=0;
-  for(let w=0;w<4;w++)for(let d=0;d<3;d++){const s=sched[w][d];if(s.count>maxDay)maxDay=s.count;s.teams.forEach(t=>t.people.forEach(p=>present.add(p)));}
-  const total=new Set(Object.values(AG_TEAMS).flatMap(t=>t.people)).size;
+function agRenderStats(sched, rows){
+  const present=new Set(rows.map(r=>r.name));
+  let maxDay=0;
+  for(let w=0;w<4;w++)for(let d=0;d<3;d++){if(sched[w][d].count>maxDay)maxDay=sched[w][d].count;}
   document.getElementById('ag-stats').innerHTML=`
-    <div class="ag-stat"><div class="ag-stat-val">${present.size}<span style="font-size:13px;color:var(--text-tertiary)">/${total}</span></div><div class="ag-stat-lbl">Pessoas cobertas/mês</div></div>
-    <div class="ag-stat"><div class="ag-stat-val">100%</div><div class="ag-stat-lbl">Cobertura garantida</div></div>
+    <div class="ag-stat"><div class="ag-stat-val">${rows.length}</div><div class="ag-stat-lbl">Reservas no mês</div></div>
+    <div class="ag-stat"><div class="ag-stat-val">${present.size}</div><div class="ag-stat-lbl">Pessoas escaladas</div></div>
     <div class="ag-stat"><div class="ag-stat-val">${maxDay}</div><div class="ag-stat-lbl">Maior ocupação/dia</div></div>
     <div class="ag-stat"><div class="ag-stat-val">${AG_CAP}</div><div class="ag-stat-lbl">Capacidade máx./dia</div></div>`;
 }
 
-function agRenderCoverage(sched){
-  const all=[...new Set(Object.values(AG_TEAMS).flatMap(t=>t.people))].sort();
-  let h=`<p class="ag-cov-title">✓ Todos com presença garantida todo mês</p><div class="ag-cov-grid">`;
-  all.forEach(p=>{h+=`<div class="ag-cov-person ok"><span>${p}</span><span class="ag-badge ok">confirmado</span></div>`;});
-  h+=`</div><p style="font-size:12px;color:var(--text-tertiary);margin-top:.75rem">✅ Grade fixa — todos os ${all.length} colaboradores têm ao menos uma visita por mês.</p>`;
+function agRenderCoverage(rows){
+  const byPerson = {};
+  rows.forEach(r=>{
+    if(!byPerson[r.name]) byPerson[r.name]={name:r.name,team:r.team||'',days:[]};
+    byPerson[r.name].days.push(r.day_key);
+  });
+  const sorted = Object.values(byPerson).sort((a,b)=>a.name.localeCompare(b.name));
+  if(sorted.length===0){
+    document.getElementById('ag-coverage').innerHTML='<p style="font-size:13px;color:var(--text-tertiary);padding:.5rem 0">Nenhuma reserva encontrada neste mês.</p>';
+    return;
+  }
+  let h=`<p class="ag-cov-title"><i class="ti ti-check" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i> Pessoas com reserva neste mês (${sorted.length})</p><div class="ag-cov-grid">`;
+  sorted.forEach(p=>{
+    const days = [...new Set(p.days)].map(dk=>{ const[y,m,d]=dk.split('-');return`${d}/${m}`; }).join(', ');
+    h+=`<div class="ag-cov-person ok" title="${p.days.length} dia(s): ${days}"><span>${p.name}</span><span class="ag-badge ok">${p.days.length}x</span></div>`;
+  });
+  h+=`</div>`;
   document.getElementById('ag-coverage').innerHTML=h;
 }
 
