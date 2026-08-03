@@ -409,7 +409,7 @@ function render(){
       let state,nameLabel,teamLabel='',onclick,disabled,noteLabel='';
       if(b){
         const isFixed=b.fixed===true;
-        const ismine=!isFixed&&me&&b.name===me;
+        const ismine=me&&b.name===me; // can cancel own booking even if fixed
         const isrecur=b.recurrent&&ismine;
         state=isrecur?'recur':ismine?'mine':'taken';
         nameLabel=b.name;teamLabel=b.team||'';noteLabel=b.note||'';
