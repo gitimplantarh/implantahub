@@ -791,7 +791,7 @@ function askPinNotice(id, isPinned){
 
 async function confirmPinNotice(id, pin){
   try {
-    const res = await fetch('/api/notices/'+id+'/pin',{
+    const res = await fetch('/api/notices/'+id,{
       method:'PATCH',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({pinned:pin})
