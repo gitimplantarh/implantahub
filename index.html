@@ -273,7 +273,7 @@
 
     <div class="ag-controls">
       <label>Mês:</label>
-      <select id="ag-sel-month" onchange="agBuild()">
+      <select id="ag-sel-month" onchange="this.dataset.userSelected='1';agBuild()">
         <option value="0">Julho 2026</option>
         <option value="1">Agosto 2026</option>
         <option value="2">Setembro 2026</option>
@@ -281,6 +281,7 @@
         <option value="4">Novembro 2026</option>
         <option value="5">Dezembro 2026</option>
       </select>
+
     </div>
 
     <div class="ag-legend">
@@ -910,7 +911,14 @@ function agTeamColor(teamName){
 }
 
 async function agBuild(){
-  const mo = parseInt(document.getElementById('ag-sel-month').value);
+  // Auto-select current month if not already set by user
+  const sel = document.getElementById('ag-sel-month');
+  const currentOffset = new Date().getMonth() - 6;
+  if(sel && sel.dataset.userSelected !== '1'){
+    if(currentOffset >= 0 && currentOffset <= 5) sel.value = currentOffset;
+    sel.dataset.userSelected = '1';
+  }
+  const mo = parseInt(sel.value);
   const {from, to} = agGetMonthRange(mo);
   const weeks = agGetWeeks(mo);
   document.getElementById('ag-calendar').innerHTML='<div style="padding:2rem;text-align:center;color:var(--text-tertiary);font-size:13px">Carregando...</div>';
