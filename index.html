@@ -420,26 +420,25 @@ function isPast(d){const t=new Date();t.setHours(0,0,0,0);return d<t;}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function countMyDay(dk){const me=getName();if(!me)return 0;return R_SPOTS.filter(s=>{const b=bookings[bKey(dk,s.id)];return b&&b.name===me;}).length;}
 function getWeekOfMonth(d){
-  // Which occurrence of this weekday in the month (1-4), and -1 if last
-  const day=d.getDate(), dow=d.getDay();
-  const week = Math.ceil(day/7);
-  // Check if last occurrence
-  const nextWeek = new Date(d); nextWeek.setDate(day+7);
-  const isLast = nextWeek.getMonth() !== d.getMonth();
-  return {week, isLast};
+  const dow=d.getDay(),year=d.getFullYear(),month=d.getMonth();
+  let count=0;
+  for(let day=1;day<=d.getDate();day++){
+    if(new Date(year,month,day).getDay()===dow) count++;
+  }
+  const nextWeek=new Date(d); nextWeek.setDate(d.getDate()+7);
+  return{week:count, isLast:nextWeek.getMonth()!==month};
 }
 function getEffBooking(dk,sid){
-  const d=bookings[bKey(dk,sid)];if(d)return d;
-  const dt=new Date(dk),dow=dt.getDay()===0?6:dt.getDay()-1;
-  // Check weekly recurrence (rec_week=0 means every week — legacy)
-  const rk=`rec__${dow}__${sid}`;
+  const direct=bookings[bKey(dk,sid)];if(direct)return direct;
+  const dt=new Date(dk+'T12:00:00');
+  const dow=dt.getDay()===0?6:dt.getDay()-1;
+  const rk='rec__'+dow+'__'+sid;
   if(bookings[rk]){
     const b=bookings[rk];
-    const recWeek=b.rec_week||0;
-    if(!recWeek) return{...b,recurrent:true}; // legacy weekly
-    const {week,isLast}=getWeekOfMonth(dt);
-    const matches=(recWeek===-1&&isLast)||(recWeek===week);
-    if(matches) return{...b,recurrent:true};
+    const recWeek=parseInt(b.rec_week||0);
+    if(!recWeek) return{...b,recurrent:true};
+    const{week,isLast}=getWeekOfMonth(dt);
+    if((recWeek===-1&&isLast)||(recWeek===week)) return{...b,recurrent:true};
   }
   return null;
 }
