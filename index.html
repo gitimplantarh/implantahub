@@ -42,7 +42,7 @@
     .notice-card:hover{box-shadow:0 4px 16px rgba(0,66,177,0.12)}
     .notice-card.pinned{border-color:var(--implanta-blue);background:var(--bg-secondary)}
     .notice-emoji{font-size:28px;margin-bottom:.5rem;display:block}
-    .notice-msg{font-size:14px;color:var(--text);line-height:1.6;margin-bottom:.75rem;word-break:break-word;white-space:pre-wrap}
+    .notice-msg{font-size:14px;color:var(--text);line-height:1.6;margin-bottom:.75rem;word-break:break-word}
     .notice-meta{font-size:11px;color:var(--text-tertiary);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px}
     .notice-author{font-weight:500;color:var(--text-secondary)}
     .notice-del{background:none;border:none;cursor:pointer;color:var(--text-tertiary);padding:2px 4px;border-radius:4px;font-size:12px;transition:color .15s,background .15s}
@@ -273,7 +273,7 @@
 
     <div class="ag-controls">
       <label>Mês:</label>
-      <select id="ag-sel-month" onchange="this.dataset.userSelected='1';agBuild()">
+      <select id="ag-sel-month" onchange="agBuild()">
         <option value="0">Julho 2026</option>
         <option value="1">Agosto 2026</option>
         <option value="2">Setembro 2026</option>
@@ -281,7 +281,6 @@
         <option value="4">Novembro 2026</option>
         <option value="5">Dezembro 2026</option>
       </select>
-
     </div>
 
     <div class="ag-legend">
@@ -339,7 +338,7 @@
       </div>
 
       <!-- Board -->
-      <div id="notices-board" style="display:flex;flex-direction:column;gap:14px;margin-bottom:2rem">
+      <div id="notices-board" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:2rem">
         <div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-tertiary);font-size:13px">Carregando avisos...</div>
       </div>
 
@@ -401,7 +400,7 @@ async function load(){
       const k=b.day_key+'__'+b.spot_id;
       bookings[k]={id:b.id,name:b.name,team:b.team||'',note:b.note||'',recurrent:b.recurrent,fixed:b.note==='Agenda fixa'};
       if(b.recurrent&&b.rec_dow!=null){
-        bookings['rec__'+b.rec_dow+'__'+b.spot_id]={id:b.id,name:b.name,team:b.team||'',note:b.note||'',recurrent:true,rec_week:b.rec_week||0};
+        bookings['rec__'+b.rec_dow+'__'+b.spot_id]={id:b.id,name:b.name,team:b.team||'',note:b.note||'',recurrent:true};
       }
     });
   } catch(e){console.error('Erro ao carregar reservas:',e);bookings={};}
@@ -419,29 +418,7 @@ function isToday(d){return d.toDateString()===new Date().toDateString()}
 function isPast(d){const t=new Date();t.setHours(0,0,0,0);return d<t;}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function countMyDay(dk){const me=getName();if(!me)return 0;return R_SPOTS.filter(s=>{const b=bookings[bKey(dk,s.id)];return b&&b.name===me;}).length;}
-function getWeekOfMonth(d){
-  const dow=d.getDay(),year=d.getFullYear(),month=d.getMonth();
-  let count=0;
-  for(let day=1;day<=d.getDate();day++){
-    if(new Date(year,month,day).getDay()===dow) count++;
-  }
-  const nextWeek=new Date(d); nextWeek.setDate(d.getDate()+7);
-  return{week:count, isLast:nextWeek.getMonth()!==month};
-}
-function getEffBooking(dk,sid){
-  const direct=bookings[bKey(dk,sid)];if(direct)return direct;
-  const dt=new Date(dk+'T12:00:00');
-  const dow=dt.getDay()===0?6:dt.getDay()-1;
-  const rk='rec__'+dow+'__'+sid;
-  if(bookings[rk]){
-    const b=bookings[rk];
-    const recWeek=parseInt(b.rec_week||0);
-    if(!recWeek) return{...b,recurrent:true};
-    const{week,isLast}=getWeekOfMonth(dt);
-    if((recWeek===-1&&isLast)||(recWeek===week)) return{...b,recurrent:true};
-  }
-  return null;
-}
+function getEffBooking(dk,sid){const d=bookings[bKey(dk,sid)];if(d)return d;const dt=new Date(dk),dow=dt.getDay()===0?6:dt.getDay()-1;const rk=`rec__${dow}__${sid}`;if(bookings[rk])return{...bookings[rk],recurrent:true};return null;}
 function chairSVG(state){const C={free:{f:'#D3D1C7',s:'#888780',l:'#B4B2A9'},mine:{f:'#C0DD97',s:'#639922',l:'#97C459'},taken:{f:'#F7C1C1',s:'#E24B4A',l:'#F09595'},recur:{f:'#FAC775',s:'#BA7517',l:'#EF9F27'},past:{f:'#F1EFE8',s:'#D3D1C7',l:'#D3D1C7'}};const c=C[state]||C.free;return`<svg width="34" height="34" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="9" rx="2" fill="${c.f}" stroke="${c.s}" stroke-width="1.2"/><rect x="3" y="11" width="18" height="4" rx="2" fill="${c.f}" stroke="${c.s}" stroke-width="1.2"/><rect x="5.5" y="15" width="3" height="6" rx="1" fill="${c.l}"/><rect x="15.5" y="15" width="3" height="6" rx="1" fill="${c.l}"/></svg>`;}
 function filterSection(spots,sec){if(sec==='all')return spots;return spots.filter(s=>s.section===sec);}
 function sectionLabel(sec){return sec==='cowork'?'Coworking':sec==='sala'?'Sala de reunião':'Espaço inteiro';}
@@ -522,42 +499,10 @@ function askBook(k,label,dk){
   pendingAction={type:'book',k,me,team,dk};
   showModal(`<h3><i class="ti ti-calendar-plus" style="font-size:18px;vertical-align:-2px;margin-right:6px"></i>Reservar lugar</h3><p><strong>${esc(label)}</strong> · ${d}/${m}/${y}</p>${warn}
     <div class="modal-field"><label>Motivo / observação <span style="color:var(--text-tertiary)">(opcional)</span></label><textarea id="book-note" placeholder="ex: reunião com cliente, foco..."></textarea></div>
-    <div style="margin-bottom:1rem">
-      <label style="display:block;font-size:12px;color:var(--text-secondary);margin-bottom:6px">Recorrência mensal <span style="color:var(--text-tertiary)">(opcional)</span></label>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-        <select id="book-recur-week" onchange="updateRecurPreview()" style="padding:7px 10px;border:0.5px solid var(--border-md);border-radius:var(--radius-md);font-size:13px;background:var(--bg-secondary);color:var(--text);outline:none;font-family:inherit">
-          <option value="">Sem recorrência</option>
-          <option value="1">Primeira</option>
-          <option value="2">Segunda</option>
-          <option value="3">Terceira</option>
-          <option value="4">Quarta</option>
-          <option value="-1">Última</option>
-        </select>
-        <select id="book-recur-dow" onchange="updateRecurPreview()" style="padding:7px 10px;border:0.5px solid var(--border-md);border-radius:var(--radius-md);font-size:13px;background:var(--bg-secondary);color:var(--text);outline:none;font-family:inherit">
-          <option value="0">Segunda-feira</option>
-          <option value="1">Terça-feira</option>
-          <option value="2">Quarta-feira</option>
-          <option value="3">Quinta-feira</option>
-          <option value="4">Sexta-feira</option>
-        </select>
-        <span style="font-size:12px;color:var(--implanta-blue)" id="recur-preview"></span>
-      </div>
-    </div>
+    <label class="modal-check"><input type="checkbox" id="book-recur"> Repetir toda semana neste mesmo lugar e dia</label>
     <div class="modal-btns"><button onclick="closeModal()">Cancelar</button><button class="btn-confirm" onclick="confirmBook()">Confirmar reserva</button></div>`);
 }
 
-
-// ── Recurrence preview ──
-function updateRecurPreview(){
-  const wk = document.getElementById('book-recur-week');
-  const dw = document.getElementById('book-recur-dow');
-  const prev = document.getElementById('recur-preview');
-  if(!wk||!dw||!prev) return;
-  const wkLabels = {'1':'primeira','2':'segunda','3':'terceira','4':'quarta','-1':'última'};
-  const dwLabels = {'0':'segunda','1':'terça','2':'quarta','3':'quinta','4':'sexta'};
-  if(wk.value) prev.textContent = '↻ toda '+wkLabels[wk.value]+' '+dwLabels[dw.value]+'-feira do mês';
-  else prev.textContent = '';
-}
 
 // ── Outlook calendar link ──
 function outlookLink(dk, spotLabel, name, note){
@@ -615,12 +560,12 @@ function askSpotInfo(k, label, dk, bookingName, bookingTeam, bookingNote, bookin
 }
 
 // ── API helpers ──
-async function apiPost(spot_id, day_key, name, team, note, recurrent, rec_dow, rec_week){
+async function apiPost(spot_id, day_key, name, team, note, recurrent, rec_dow){
   try {
     const res = await fetch('/api/bookings', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({spot_id, day_key, name, team, note, recurrent: recurrent||false, rec_dow: rec_dow||null, rec_week: rec_week||null})
+      body: JSON.stringify({spot_id, day_key, name, team, note, recurrent: recurrent||false, rec_dow: rec_dow||null})
     });
     if(!res.ok){ const e=await res.json().catch(()=>{}); throw new Error(e?.error||res.status); }
     return true;
@@ -635,14 +580,13 @@ async function apiDelete(id){
 async function confirmBook(){
   if(!pendingAction||pendingAction.type!=='book')return;
   const note=(document.getElementById('book-note').value||'').trim();
-  const recurWeek=parseInt(document.getElementById('book-recur-week')?.value||'0')||0;
-  const recurDow=parseInt(document.getElementById('book-recur-dow')?.value||'0');
-  const hasRecur=recurWeek!==0;
+  const recur=document.getElementById('book-recur').checked;
   const sid=pendingAction.k.split('__')[1];
-  const ok=await apiPost(sid,pendingAction.dk,pendingAction.me,pendingAction.team||'',note,false,null,null);
+  const ok=await apiPost(sid,pendingAction.dk,pendingAction.me,pendingAction.team||'',note,false,null);
   if(!ok)return;
-  if(hasRecur){
-    await apiPost(sid,'recurrent',pendingAction.me,pendingAction.team||'',note,true,recurDow,recurWeek);
+  if(recur){
+    const d=new Date(pendingAction.dk),dow=d.getDay()===0?6:d.getDay()-1;
+    await apiPost(sid,'recurrent',pendingAction.me,pendingAction.team||'',note,true,dow);
   }
   showToast('Reserva confirmada!','#97C459');
   const sid2=pendingAction.k.split('__')[1];
@@ -743,12 +687,7 @@ function showMyReservations(){
   const seen=new Set();const deduped=future.filter(r=>{const k=r.b.recurrent?`rec__${r.d.getDay()}__${r.spot.id}`:bKey(r.dk,r.spot.id);if(seen.has(k))return false;seen.add(k);return true;});
   let list='';
   if(deduped.length===0){list='<p class="res-empty">Nenhuma reserva futura.</p>';}
-  else{list=deduped.slice(0,20).map(r=>{const dowNames=['segunda','terça','quarta','quinta','sexta'];
-        const dowName=dowNames[r.d.getDay()===0?6:r.d.getDay()-1];
-        const wkNames={1:'primeira',2:'segunda',3:'terceira',4:'quarta',[-1]:'última'};
-        const recWeek=r.b.rec_week||0;
-        const recLabel=recWeek?`↻ toda ${wkNames[recWeek]||''} ${dowName}-feira do mês`:`↻ toda ${dowName}`;
-        const label=r.b.recurrent?recLabel:fmtFull(r.dk);const ck=bKey(r.dk,r.spot.id);return`<div class="res-item"><div style="font-size:20px"><i class="ti ti-armchair" style="font-size:20px"></i></div><div class="res-item-info"><div class="res-item-date">${label}</div><div class="res-item-spot">${r.spot.section==='cowork'?'Coworking':'Sala'} · ${r.spot.label}${r.b.note?' · '+esc(r.b.note):''}</div></div><button class="res-item-cancel" onclick="closeModal();setTimeout(()=>askCancel('${ck}','${esc(r.spot.label)}','${r.dk}',${r.b.recurrent?'true':'false'}),100)"><i class="ti ti-x" style="font-size:12px"></i> Cancelar</button></div>`;}).join('');}
+  else{list=deduped.slice(0,20).map(r=>{const label=r.b.recurrent?`↻ toda ${['segunda','terça','quarta','quinta','sexta'][r.d.getDay()===0?6:r.d.getDay()-1]}`:fmtFull(r.dk);const ck=bKey(r.dk,r.spot.id);return`<div class="res-item"><div style="font-size:20px"><i class="ti ti-armchair" style="font-size:20px"></i></div><div class="res-item-info"><div class="res-item-date">${label}</div><div class="res-item-spot">${r.spot.section==='cowork'?'Coworking':'Sala'} · ${r.spot.label}${r.b.note?' · '+esc(r.b.note):''}</div></div><button class="res-item-cancel" onclick="closeModal();setTimeout(()=>askCancel('${ck}','${esc(r.spot.label)}','${r.dk}',${r.b.recurrent?'true':'false'}),100)"><i class="ti ti-x" style="font-size:12px"></i> Cancelar</button></div>`;}).join('');}
   showModal(`<h3><i class="ti ti-list"></i> Minhas reservas — ${esc(me)}</h3><div style="max-height:340px;overflow-y:auto">${list}</div><div class="modal-btns" style="margin-top:1rem"><button onclick="closeModal()">Fechar</button></div>`);
 }
 
@@ -795,7 +734,7 @@ function renderNotices(rows){
     return `<div class="notice-card${n.pinned?' pinned':''}">
       ${n.pinned?'<div style="font-size:10px;font-weight:600;color:var(--implanta-blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;display:flex;align-items:center;gap:4px"><i class="ti ti-pin" style="font-size:11px"></i> Fixado</div>':''}
       <span class="notice-emoji">${n.emoji||'📌'}</span>
-      <div class="notice-msg">${esc(n.message).replace(/\n/g,"<br>")}</div>
+      <div class="notice-msg">${esc(n.message)}</div>
       <div class="notice-meta">
         <span><span class="notice-author">${esc(n.author)}</span>${n.team?' · '+esc(n.team):''}</span>
         <span style="display:flex;align-items:center;gap:4px">
@@ -971,14 +910,7 @@ function agTeamColor(teamName){
 }
 
 async function agBuild(){
-  // Auto-select current month if not already set by user
-  const sel = document.getElementById('ag-sel-month');
-  const currentOffset = new Date().getMonth() - 6;
-  if(sel && sel.dataset.userSelected !== '1'){
-    if(currentOffset >= 0 && currentOffset <= 5) sel.value = currentOffset;
-    sel.dataset.userSelected = '1';
-  }
-  const mo = parseInt(sel.value);
+  const mo = parseInt(document.getElementById('ag-sel-month').value);
   const {from, to} = agGetMonthRange(mo);
   const weeks = agGetWeeks(mo);
   document.getElementById('ag-calendar').innerHTML='<div style="padding:2rem;text-align:center;color:var(--text-tertiary);font-size:13px">Carregando...</div>';
