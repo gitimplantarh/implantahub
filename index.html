@@ -526,7 +526,7 @@ function askBook(k,label,dk){
     <div style="margin-bottom:1rem">
       <label style="display:block;font-size:12px;color:var(--text-secondary);margin-bottom:6px">Recorrência mensal <span style="color:var(--text-tertiary)">(opcional)</span></label>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-        <select id="book-recur-week" style="padding:7px 10px;border:0.5px solid var(--border-md);border-radius:var(--radius-md);font-size:13px;background:var(--bg-secondary);color:var(--text);outline:none;font-family:inherit">
+        <select id="book-recur-week" onchange="updateRecurPreview()" style="padding:7px 10px;border:0.5px solid var(--border-md);border-radius:var(--radius-md);font-size:13px;background:var(--bg-secondary);color:var(--text);outline:none;font-family:inherit">
           <option value="">Sem recorrência</option>
           <option value="1">Primeira</option>
           <option value="2">Segunda</option>
@@ -534,31 +534,31 @@ function askBook(k,label,dk){
           <option value="4">Quarta</option>
           <option value="-1">Última</option>
         </select>
-        <select id="book-recur-dow" style="padding:7px 10px;border:0.5px solid var(--border-md);border-radius:var(--radius-md);font-size:13px;background:var(--bg-secondary);color:var(--text);outline:none;font-family:inherit">
+        <select id="book-recur-dow" onchange="updateRecurPreview()" style="padding:7px 10px;border:0.5px solid var(--border-md);border-radius:var(--radius-md);font-size:13px;background:var(--bg-secondary);color:var(--text);outline:none;font-family:inherit">
           <option value="0">Segunda-feira</option>
           <option value="1">Terça-feira</option>
           <option value="2">Quarta-feira</option>
           <option value="3">Quinta-feira</option>
           <option value="4">Sexta-feira</option>
         </select>
-        <span style="font-size:12px;color:var(--text-tertiary)" id="recur-preview"></span>
+        <span style="font-size:12px;color:var(--implanta-blue)" id="recur-preview"></span>
       </div>
     </div>
-    <script>
-      (function(){
-        const wk = document.getElementById('book-recur-week');
-        const dw = document.getElementById('book-recur-dow');
-        const prev = document.getElementById('recur-preview');
-        const wkLabels = {1:'primeira',2:'segunda',3:'terceira',4:'quarta',[-1]:'última'};
-        const dwLabels = {0:'segunda',1:'terça',2:'quarta',3:'quinta',4:'sexta'};
-        function update(){ if(wk.value) prev.textContent='↻ toda '+wkLabels[wk.value]+' '+dwLabels[dw.value]+'-feira do mês'; else prev.textContent=''; }
-        wk.addEventListener('change', update);
-        dw.addEventListener('change', update);
-      })();
-    </script>
     <div class="modal-btns"><button onclick="closeModal()">Cancelar</button><button class="btn-confirm" onclick="confirmBook()">Confirmar reserva</button></div>`);
 }
 
+
+// ── Recurrence preview ──
+function updateRecurPreview(){
+  const wk = document.getElementById('book-recur-week');
+  const dw = document.getElementById('book-recur-dow');
+  const prev = document.getElementById('recur-preview');
+  if(!wk||!dw||!prev) return;
+  const wkLabels = {'1':'primeira','2':'segunda','3':'terceira','4':'quarta','-1':'última'};
+  const dwLabels = {'0':'segunda','1':'terça','2':'quarta','3':'quinta','4':'sexta'};
+  if(wk.value) prev.textContent = '↻ toda '+wkLabels[wk.value]+' '+dwLabels[dw.value]+'-feira do mês';
+  else prev.textContent = '';
+}
 
 // ── Outlook calendar link ──
 function outlookLink(dk, spotLabel, name, note){
